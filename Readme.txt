@@ -26,7 +26,7 @@ import heapq as pq
 	Justin Bieber may come up in negative (and on the top) as he has more dislikes than likes for 
 	some of his videos! Ignore negatives and look for videos with large view count but small score. 
 
- - Sample command (Updated 20th March 2018): 
+ - Sample command (Updated 9th Septtember 2020): 
 
 	Open command prompt or terminal and "cd" into the directory with the code, then type and enter:
 	
