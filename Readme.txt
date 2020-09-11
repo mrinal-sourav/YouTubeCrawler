@@ -1,11 +1,9 @@
  
- - Code requires the following imports:
+ - Code requires the following imports; default python3 installation should have them all :
 
-import csv 
 import re
 import urllib.request 
 import time 
-import pandas as pd
 import heapq as pq
  
  - Inputs: 
@@ -13,8 +11,8 @@ import heapq as pq
 	Number of links/videos to crawl
 
  - Outputs: 
-	A sorted csv file with video data in the following format:
-		Video Title, Video link, Score, Author, Views, Likes, Dislikes 
+	A sorted html file with video data in the following format:
+		Video Title (with hyperlink), Score, Author, Views, Likes, Dislikes 
 
 	
 	Score is calculated by the ratio:
@@ -34,43 +32,51 @@ import heapq as pq
 
 - You should get something like: 
 
- Enter the seed url for the crawl: https://www.youtube.com/c/TED/videos?view=0&sort=p&flow=grid
+ Enter the seed url for the crawl: https://youtu.be/XEb7eGVWEJc
 
- Enter the number of videos to crawl: 100
+ Enter the number of videos to crawl (getting 100 unique links takes ~7 minutes): 100
 
-        30.0 percent crawling complete: CSV file named TED YouTube created 
+        Crawling started from link titled:  Story Of Wick YouTube
 
-
-        49.0 percent crawling complete: CSV file named TED YouTube created 
-
-
-        69.0 percent crawling complete: CSV file named TED YouTube created 
+        12.0 percent crawling complete: html file named Story Of Wick YouTube updated 
 
 
-        87.0 percent crawling complete: CSV file named TED YouTube created 
+        33.0 percent crawling complete: html file named Story Of Wick YouTube updated 
 
 
-        94.0 percent crawling complete: CSV file named TED YouTube created 
+        37.0 percent crawling complete: html file named Story Of Wick YouTube updated 
 
 
-        98.0 percent crawling complete: CSV file named TED YouTube created 
+        47.0 percent crawling complete: html file named Story Of Wick YouTube updated 
 
 
-        104.0 percent crawling complete: CSV file named TED YouTube created 
+        64.0 percent crawling complete: html file named Story Of Wick YouTube updated 
 
 
-        --- Crawl took 302.28309321403503 seconds ---
+        77.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+
+
+        93.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+
+
+        109.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+
+
+        --- Crawl took 439.1534779071808 seconds ---
 
  - IMPORTANT NOTES: 
 
-	WAIT TIME IS ADDED FOR "POLITENESS POLICY" WHILE CRAWLING. (updated from 2 seconds to 1.1 seconds) 
+	WAIT TIME IS ADDED FOR "POLITENESS POLICY" WHILE CRAWLING. (set to 1.2 seconds) 
 	PLEASE DO NOT REDUCE IT LEST YOUTUBE THINKS YOU ARE A BOT. 
+
+	It is advisable to crawl not more than 150 links as the subject matter of the SeedURL
+	may diverge when the depth of crawl increases. 
 
 	Actual number of urls in the crawled file may have slightly more links than specified. Links gathered may 
 	differ based on geographic location crawled from.   
 
- - TIP: 
-	Once you have the csv file from a crawl, look for videos with relatively large views 
-	that appear towards the top. 
+	Code for writing to html is inspired from: 
+	https://vidigest.com/2018/12/02/generating-an-html-table-from-file-data-using-python-3/  
+
 
 
