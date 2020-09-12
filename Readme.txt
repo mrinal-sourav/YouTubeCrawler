@@ -32,37 +32,57 @@ import heapq as pq
 
 - You should get something like: 
 
- Enter the seed url for the crawl: https://youtu.be/XEb7eGVWEJc
+  Enter the seed url for the crawl: https://youtu.be/kD5yc1LQrpQ
 
- Enter the number of videos to crawl (getting 100 unique links takes ~7 minutes): 100
+ Enter the number of videos to crawl (getting 100 links takes ~10 minutes): 100
 
-        Crawling started from link titled:  Story Of Wick YouTube
+        Crawling started from link titled:  Michio Kaku Future of Humans Aliens Space Travel a
 
-        12.0 percent crawling complete: html file named Story Of Wick YouTube updated 
-
-
-        33.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        13.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        37.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+                 Issue opening: https://www.youtube.com/watch?v=4cX-z-MyNrU
+
+        15.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        47.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        28.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        64.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        28.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        77.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        41.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        93.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        45.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        109.0 percent crawling complete: html file named Story Of Wick YouTube updated 
+        56.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
 
 
-        --- Crawl took 439.1534779071808 seconds ---
+        63.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        70.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        73.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        73.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        80.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        94.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        107.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+
+
+        --- Crawl took 757.9418661594391 seconds ---
 
  - IMPORTANT NOTES: 
 

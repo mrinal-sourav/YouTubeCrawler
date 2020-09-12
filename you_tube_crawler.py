@@ -5,9 +5,10 @@ import heapq as pq
 
 # ARGUMENTS
 SeedUrl = input("\n Enter the seed url for the crawl: ")
-max_pages = int(input("\n Enter the number of videos to crawl (getting 100 unique links takes ~7 minutes): "))
+max_pages = int(input("\n Enter the number of videos to crawl (getting 100 links takes ~10 minutes): "))
 
 # CONSTANTS 
+# SLEEP_TIME time is added for politeness policy while crawling; do not reduce.  
 SLEEP_TIME = 1.2
 TITLE_CLIP = 50
 
@@ -17,15 +18,16 @@ TITLE_CLIP = 50
 def create_anchor(link_data):
     title = link_data[0] 
     url = link_data[1] 
-    hyperlink = '<a href=' + url + '>' + title + '</a>' 
+    hyperlink = '<a href=' + url + ' target="_blank">' + title + '</a>' 
     res = [hyperlink] + link_data[2:]
     return res 
 
-# to get score from scored list (with anchored title)
+# To get score from the scored list (with anchored title).
+# This is to enable sorting of the list containing data. 
 def get_score(row):
     return row[1]
 
-# to create html table from data and write to filename
+# To create html table from data and write to filename
 def write_to_html(filename, sorted_list):
     table = "<table>\n"
     # Create the table's column headers
@@ -52,10 +54,7 @@ def get_data(link):
     and other info (title, author) to return a row of data as list'''
     
     row = ['NA', link, float('inf'), 'NA', 0, 0, 0] 
-    
-    # wait time is added for politeness policy while crawling; do not change. 
     time.sleep(SLEEP_TIME)
-    
     try:
         with urllib.request.urlopen(link) as url:
             theSite=str(url.read()) 
@@ -65,12 +64,14 @@ def get_data(link):
             title = re.sub(r'\W+', ' ', title)
             title = title[:TITLE_CLIP]
 
+            # get author 
             if re.findall('''"author":"(.+?)"''',theSite,re.DOTALL):
                 author = re.findall('''"author":"(.+?)"''',theSite,re.DOTALL)[0]
                 author = re.sub(r'\W+', ' ', author)
             else:
                 author = 'NA'
 
+            # get views, likes, dislikes. 
             try:
                 views = re.findall('''{["]viewCount["]:{["]simpleText["]:["](.+?) views["]}''',
                                    theSite,
@@ -99,11 +100,14 @@ def get_data(link):
                 row = [title, link, float('inf'), author, 0, 0, 0]    
     except:
         print("\n\t\t Issue opening: " + link)
+        
     return row
 
 def smart_crawl(SeedUrl, max_pages): 
-    ''' To crawl youtube with A_Star algorithm using 
-    views/(likes - dislikes) score as heuristics '''
+    ''' To crawl youtube with A_Star (hill-climbing) algorithm using 
+    views/(likes - dislikes) score as the heuristic.
+    Inputs: The link to start crawling from, the number of videos to crawl.
+    Ouptuts: An html file with links sorted by the heuristic. '''
     
     # get SeedUrl data
     seed_data = get_data(SeedUrl)
@@ -134,9 +138,13 @@ def smart_crawl(SeedUrl, max_pages):
         # wait time is added for politeness policy while crawling
         time.sleep(SLEEP_TIME) 
         with urllib.request.urlopen(current_url) as url: 
-            theSite = str(url.read()) # theSite contains all the text read from current_url 
+            # Read all the text read from current_url into theSite
+            theSite = str(url.read())
+            # Extract all other video ids from the current page.  
             links = re.findall('''"videoId":"(.+?)"''',theSite,re.DOTALL)
-            complete_links = [prepend + x for x in links]
+            # Convert ids to absolute youtube urls
+            complete_links = [prepend + x for x in links] 
+            # Filter out the links already crawled so far. 
             unique_complete_links = set(complete_links)
             new_links = list(unique_complete_links - set(urllist)) 
             
@@ -145,7 +153,7 @@ def smart_crawl(SeedUrl, max_pages):
             # set the score returned in link data, as priority for the queue
             priority = link_data[2] 
             author = link_data[3]
-            if author not in authors:
+            if author not in authors: # insert only unique authors
                 urllist.append(link_data[1])
                 authors.append(author)
                 pq.heappush(frontier, (priority, link_data)) 
@@ -160,6 +168,7 @@ def smart_crawl(SeedUrl, max_pages):
         print("\n\t" + str(percentage_completed)[:5] + " percent crawling complete: html file named " + 
               seed_title + " updated \n")
 
-start_time = time.time()
-smart_crawl(SeedUrl, max_pages)
-print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
+if __name__ == "__main__":
+    start_time = time.time()
+    smart_crawl(SeedUrl, max_pages)
+    print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
