@@ -1,5 +1,7 @@
- 
- - Code requires the following imports; default python3 installation should have them all :
+This YouTube crawler crawls youtube starting from a SeedUrl provided by the user. It uses a hillclimbing algorithm based on views/(likes-dislike) score of videos. The hypotheses being; videos with good content will have more likes per views. Here's a video from Veritasium that explains how YouTube does not do a great job of providing users with good recommendations: https://youtu.be/fHsa9DqmId8 
+As such, users may benifit from a rather explorative approach from this crawler to diversify their finds on Youtube. 
+
+ - Code requires the following imports; default python 3.5+ installations should have them all :
 
 import re
 import urllib.request 
@@ -7,8 +9,11 @@ import time
 import heapq as pq
  
  - Inputs: 
-	A Seed URL from youtube 
-	Number of links/videos to crawl
+	- A Seed URL from youtube 
+	- Number of links/videos to crawl 
+	- Maximum number of authors to repeat. This is set to the default of 3 to keep the crawl 		results relevant and close to the topic of the original SeedUrl provided. 
+	- Target Folder: The folder to write the resulting file to. 
+		This enables creating a heirarchy of topics on the user's local system.   
 
  - Outputs: 
 	A sorted html file with video data in the following format:
@@ -24,7 +29,7 @@ import heapq as pq
 	Justin Bieber may come up in negative (and on the top) as he has more dislikes than likes for 
 	some of his videos! Ignore negatives and look for videos with large view count but small score. 
 
- - Sample command (Updated 9th Septtember 2020): 
+ - Sample command (Updated 21st October 2020): 
 
 	Open command prompt or terminal and "cd" into the directory with the code, then type and enter:
 	
@@ -32,57 +37,47 @@ import heapq as pq
 
 - You should get something like: 
 
-  Enter the seed url for the crawl: https://youtu.be/kD5yc1LQrpQ
+  Enter the seed url for the crawl: https://www.youtube.com/c/VEVO/videos?view=0&sort=p&flow=grid
 
- Enter the number of videos to crawl (getting 100 links takes ~10 minutes): 100
+ Enter the number of videos to crawl (120 (default) links takes ~10 minutes): 
 
-        Crawling started from link titled:  Michio Kaku Future of Humans Aliens Space Travel a
+ Enter the max. num. of times you want to see authors repeat (default=3): 
 
-        13.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+ Enter the target folder for the resulting html: outputs/music
 
+        Crawling started from link titled:  Vevo YouTube
 
-                 Issue opening: https://www.youtube.com/watch?v=4cX-z-MyNrU
-
-        15.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
-
-
-        28.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        2.5 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        28.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        17.5 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        41.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        33.33 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        45.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        43.33 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        56.99 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        56.66 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        63.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        70.0 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        70.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        82.5 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        73.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        87.5 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        73.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        97.5 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        80.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
+        108.3 percent crawling complete: html file named Vevo YouTube updated 
 
 
-        94.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
-
-
-        107.0 percent crawling complete: html file named Michio Kaku Future of Humans Aliens Space Travel a updated 
-
-
-        --- Crawl took 757.9418661594391 seconds ---
+        --- Crawl took 531.0542154312134 seconds ---
 
  - IMPORTANT NOTES: 
 
