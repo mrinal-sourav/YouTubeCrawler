@@ -176,7 +176,7 @@ def smart_crawl(SeedUrl, max_pages):
                 authors[author] = 1
                 pq.heappush(frontier, (priority, link_data))
                 scored_list.append(create_anchor(link_data))
-            elif authors[author] < max_authors:
+            elif authors[author] <= max_authors:
                 urllist.append(link_data[1])
                 authors[author] += 1
                 pq.heappush(frontier, (priority, link_data))
