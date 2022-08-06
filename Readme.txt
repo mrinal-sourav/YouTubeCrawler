@@ -1,5 +1,5 @@
-This YouTube crawler crawls youtube starting from a SeedUrl provided by the user. It uses a hillclimbing algorithm based on views/(likes-dislike) score of videos. The hypotheses being; videos with good content will have more likes per views. Here's a video from Veritasium that explains how YouTube does not do a great job of providing users with good recommendations: https://youtu.be/fHsa9DqmId8 
-As such, users may benifit from a rather explorative approach from this crawler to diversify their finds on Youtube. 
+This YouTube crawler crawls youtube starting from a SeedUrl provided by the user. It uses a hillclimbing algorithm based on views/(likes-dislike) score of videos. The hypotheses being; videos with good content will have more likes per views. Here's a video from Veritasium that explains how YouTube does not do a great job of providing users with good recommendations: https://youtu.be/fHsa9DqmId8
+As such, users may benifit from a rather explorative approach from this crawler to diversify their finds on Youtube.
 
  - Code requires the following imports; default python 3.5+ installations should have them all :
 
@@ -16,7 +16,7 @@ from pathlib import Path
 	- Target Folder: The folder to write the resulting file to. 
 		This enables creating a heirarchy of topics on the user's local system.   
 
- - Outputs: 
+ - Outputs:
 	A sorted html file with video data in the following format:
 		Video Title (with hyperlink), Score, Author, Views, Likes, Dislikes 
 
@@ -24,11 +24,10 @@ from pathlib import Path
 	Score is calculated by the ratio:
 
 		No. of Views / (Likes - Dislikes)
+		Updated to (Views/Likes) since YouTube decided to remove dislikes
 
 	The smaller this number, the "better" the video. 
-	If EVERY person who views a video also hits "like", this score will be 1. 
-	Justin Bieber may come up in negative (and on the top) as he has more dislikes than likes for 
-	some of his videos! Ignore negatives and look for videos with large view count but small score. 
+	If EVERY person who views a video also hits "like", this score will be 1.
 
  - Sample command (Updated 21st October 2020): 
 
