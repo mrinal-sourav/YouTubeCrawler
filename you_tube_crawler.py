@@ -1,3 +1,4 @@
+
 import re
 import urllib.request
 import time
@@ -47,7 +48,7 @@ def get_score(row):
 def write_to_html(filename, sorted_list):
     table = "<table>\n"
     # Create the table's column headers
-    header = ['Title', 'Score', 'Author', 'Views', 'Likes', 'Dislikes']
+    header = ['Title', 'Score', 'Author', 'Views', 'Likes']
     table += "  <tr>\n"
     for column in header:
         table += "    <th>{0}</th>\n".format(column.strip())
@@ -90,29 +91,29 @@ def get_data(link):
             # get views, likes, dislikes.
             try:
                 views = re.findall('''{["]viewCount["]:{["]simpleText["]:["](.+?) views["]}''',
-                                   theSite,
-                                   re.DOTALL)[0]
-                likes = re.findall('''{["]accessibilityData["]:{["]label["]:["](.+?) likes["]}''',
-                                   theSite,
-                                   re.DOTALL)[0]
-                dislikes = re.findall('''(\d+,?\d*) dislikes["]}''',
-                                      theSite,
-                                      re.DOTALL)[0]
+                                    theSite,
+                                    re.DOTALL)[0]
+                # likes = re.findall(r'{["]accessibilityData["]:{["]label["]:["](.+?) likes["]}',
+                #                    theSite,
+                #                    re.DOTALL)[0]
+                likes = re.findall('''{\"accessibilityData\":{\"label\":\"(.+?) likes\"}''',
+                                    theSite,
+                                    re.DOTALL)[1]
+
                 # if all works continue as below with calculating score
                 views=int(views.replace(',', ''))
                 likes=int(likes.replace(',', ''))
-                dislikes=int(dislikes.replace(',', ''))
 
                 # handle edge cases, prevent divide by zero etc.
-                if likes==dislikes or likes==0:
+                if likes==0:
                     likes+=1
 
-                score = views/(likes-dislikes)
-                row = [title, link, score, author, views, likes, dislikes]
+                score = views/likes
+                row = [title, link, score, author, views, likes]
 
             except:
                 # if the above doesnt work, insert score as infinite
-                row = [title, link, float('inf'), author, 0, 0, 0]
+                row = [title, link, float('inf'), author, 0, 0]
     except:
         print("\n\t\t Issue opening: " + link)
 
@@ -148,7 +149,7 @@ def smart_crawl(SeedUrl, max_pages):
     # Iteration starts with atleast one element in frontier.
     # Iteration continues till num_pages reaches the max_pages (defined by user).
     # The loop is structured like bfs using a prio queue (a*) starting from the seed url.
-    while frontier and len(scored_list) <= max_pages:
+    while frontier and (len(scored_list) <= max_pages):
         links = []
         # current_url is populated starting with the seed url
         _ , current_node = pq.heappop(frontier)
@@ -196,3 +197,4 @@ if __name__ == "__main__":
     start_time = time.time()
     smart_crawl(SeedUrl, max_pages)
     print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
+
