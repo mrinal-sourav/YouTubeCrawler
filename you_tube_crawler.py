@@ -93,9 +93,6 @@ def get_data(link):
                 views = re.findall('''{["]viewCount["]:{["]simpleText["]:["](.+?) views["]}''',
                                     theSite,
                                     re.DOTALL)[0]
-                # likes = re.findall(r'{["]accessibilityData["]:{["]label["]:["](.+?) likes["]}',
-                #                    theSite,
-                #                    re.DOTALL)[0]
                 likes = re.findall('''{\"accessibilityData\":{\"label\":\"(.+?) likes\"}''',
                                     theSite,
                                     re.DOTALL)[1]
