@@ -1,22 +1,13 @@
-
+#%%
 import re
 import urllib.request
 import time
 import heapq as pq
 from pathlib import Path
 
-# ARGUMENTS
-SeedUrl = input("\n Enter the seed url for the crawl: ") or "https://youtu.be/fHsa9DqmId8"
-max_pages = int(input("\n Enter the number of videos to crawl (120 (default) links takes ~10 minutes): ") or "120")
-max_authors = int(input("\n Enter the max. num. of times you want to see authors repeat (default=3): ") or "3")
-target_folder = input("\n Enter the target folder for the resulting html: ") or "outputs/"
-if target_folder[-1]!='/':
-    target_folder += '/'
-Path(target_folder).mkdir(parents=True, exist_ok=True)
-
 # CONSTANTS
 # SLEEP_TIME time is added for politeness policy while crawling; do not reduce.
-SLEEP_TIME = 1.2
+SLEEP_TIME = 1.1
 TITLE_CLIP = 50
 
 # FUNCTIONS
@@ -107,7 +98,7 @@ def get_data(link):
 
                 score = views/likes
                 row = [title, link, score, author, views, likes]
-
+                print(row)
             except:
                 # if the above doesnt work, insert score as infinite
                 row = [title, link, float('inf'), author, 0, 0]
@@ -136,7 +127,7 @@ def smart_crawl(SeedUrl, max_pages):
     prepend = "https://www.youtube.com/watch?v="
     urllist = []
     scored_list = []
-    authors = {seed_data[3]:1}
+    author_count = {seed_data[3]:1}
 
     # Frontier is defined as a priority queue and the seed url is added to it.
     # This is a min que and link with the lowest score will be popped first.
@@ -169,14 +160,14 @@ def smart_crawl(SeedUrl, max_pages):
             # set the score returned in link data, as priority for the queue
             priority = link_data[2]
             author = link_data[3]
-            if author not in authors.keys(): # insert only unique authors
+            if author not in author_count.keys(): # insert only unique authors
                 urllist.append(link_data[1])
-                authors[author] = 1
+                author_count[author] = 1
                 pq.heappush(frontier, (priority, link_data))
                 scored_list.append(create_anchor(link_data))
-            elif authors[author] <= max_authors:
+            elif author_count[author] <= max_author_count:
                 urllist.append(link_data[1])
-                authors[author] += 1
+                author_count[author] += 1
                 pq.heappush(frontier, (priority, link_data))
                 scored_list.append(create_anchor(link_data))
 
@@ -191,6 +182,15 @@ def smart_crawl(SeedUrl, max_pages):
          + seed_title + " updated \n")
 
 if __name__ == "__main__":
+    # ARGUMENTS
+    SeedUrl = input("\n Enter the seed url for the crawl: ") or "https://youtu.be/fHsa9DqmId8"
+    max_pages = int(input("\n Enter the number of videos to crawl (120 (default) links takes ~10 minutes): ") or "120")
+    max_author_count = int(input("\n Enter the max. num. of times you want to see author_count repeat (default=3): ") or "3")
+    target_folder = input("\n Enter the target folder for the resulting html: ") or "outputs/"
+    if target_folder[-1]!='/':
+        target_folder += '/'
+    Path(target_folder).mkdir(parents=True, exist_ok=True)
+
     start_time = time.time()
     smart_crawl(SeedUrl, max_pages)
     print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
