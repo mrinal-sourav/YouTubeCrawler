@@ -98,7 +98,6 @@ def get_data(link):
 
                 score = views/likes
                 row = [title, link, score, author, views, likes]
-                print(row)
             except:
                 # if the above doesnt work, insert score as infinite
                 row = [title, link, float('inf'), author, 0, 0]
