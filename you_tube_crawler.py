@@ -4,6 +4,8 @@ import urllib.request
 import time
 import heapq as pq
 from pathlib import Path
+import math
+import argparse
 
 # CONSTANTS
 # SLEEP_TIME time is added for politeness policy while crawling; do not reduce.
@@ -97,7 +99,9 @@ def get_data(link):
                     likes+=1
 
                 score = views/likes
-                row = [title, link, score, author, views, likes]
+                # dividing furtther by log10 to prioritize higher number of likes
+                final_score = score / (math.log10(likes+10)) # addding 10 to avoid divide by 0
+                row = [title, link, final_score, author, views, likes]
             except:
                 # if the above doesnt work, insert score as infinite
                 row = [title, link, float('inf'), author, 0, 0]
@@ -156,6 +160,9 @@ def smart_crawl(SeedUrl, max_pages):
 
         for link in new_links:
             link_data = get_data(link)
+            if link_data[2] == float('inf'):
+                urllist.append(link_data[1])
+                continue
             # set the score returned in link data, as priority for the queue
             priority = link_data[2]
             author = link_data[3]
@@ -185,12 +192,19 @@ if __name__ == "__main__":
     SeedUrl = input("\n Enter the seed url for the crawl: ") or "https://youtu.be/fHsa9DqmId8"
     max_pages = int(input("\n Enter the number of videos to crawl (120 (default) links takes ~10 minutes): ") or "120")
     max_author_count = int(input("\n Enter the max. num. of times you want to see author_count repeat (default=3): ") or "3")
-    target_folder = input("\n Enter the target folder for the resulting html: ") or "outputs/"
+    target_folder = input("\n Enter the target folder for the resulting html: ") or "./crawled_outputs/default_outputs/"
     if target_folder[-1]!='/':
         target_folder += '/'
+    if target_folder[0]=='/':
+        target_folder = target_folder[1:]
+    target_folder = "./crawled_outputs/" + target_folder
     Path(target_folder).mkdir(parents=True, exist_ok=True)
 
     start_time = time.time()
     smart_crawl(SeedUrl, max_pages)
     print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
 
+
+# %%
+math.log10(10)
+# %%
