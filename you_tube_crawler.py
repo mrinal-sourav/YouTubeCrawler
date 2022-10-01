@@ -5,6 +5,7 @@ import time
 import heapq as pq
 from pathlib import Path
 import math
+import json
 import argparse
 
 # CONSTANTS
@@ -37,6 +38,14 @@ def create_anchor(link_data):
 def get_score(row):
     return row[1]
 
+def get_author_counts_dict(path_to_author_counts_dict="author_counts.json"):
+    try:
+        with open(path_to_author_counts_dict, 'r') as fp:
+            author_counts_dict = json.load(fp)
+        return author_counts_dict
+    except Exception:
+        return {}
+
 # To create html table from data and write to filename
 def write_to_html(filename, sorted_list):
     table = "<table>\n"
@@ -59,9 +68,11 @@ def write_to_html(filename, sorted_list):
     with open(target_folder+filename, "w") as f:
         f.writelines(table)
 
-def get_data(link):
-    '''Given a link to youtube video, extracts views, likes, dislikes,
-    and other info (title, author) to return a row of data as list'''
+def get_data(link, normalized_author_counts):
+    '''Given a link to youtube video, extracts views, likes,
+    and other info (title, author) to return a row of data as list.
+    normalized_author_counts is used to weight the scores of frequently 
+    occuring authors in all crawls done by the user.'''
 
     row = ['NA', link, float('inf'), 'NA', 0, 0, 0]
     time.sleep(SLEEP_TIME)
@@ -101,6 +112,12 @@ def get_data(link):
                 score = views/likes
                 # dividing furtther by log10 to prioritize higher number of likes
                 final_score = score / (math.log10(likes+10)) # addding 10 to avoid divide by 0
+
+                # multiply scores by author scount if author hass been crawled in the past before
+                # this reduces the priority of popular authors
+                if author in normalized_author_counts.keys():
+                    final_score = final_score*normalized_author_counts[author]
+
                 row = [title, link, final_score, author, views, likes]
             except:
                 # if the above doesnt work, insert score as infinite
@@ -110,7 +127,12 @@ def get_data(link):
 
     return row
 
-def smart_crawl(SeedUrl, max_pages):
+def normalize_dictionary(dictionary):
+    factor=1.0/sum(dictionary.itervalues())
+    normalised_dictionary = {k: v*factor for k, v in dictionary.iteritems()}
+    return normalised_dictionary
+
+def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
     views/(likes - dislikes) score as the heuristic.
 
@@ -118,19 +140,23 @@ def smart_crawl(SeedUrl, max_pages):
         SeedUrl ([string]): The link to start crawling from.
         max_pages ([int]): The number of videos to crawl.
     """
-
+    author_counts = get_author_counts_dict(path_to_author_counts_dict)
+    # normalize author counts
+    normalized_author_counts = normalize_dictionary(author_counts)
     # get SeedUrl data
-    seed_data = get_data(SeedUrl)
+    seed_data = get_data(SeedUrl, normalized_author_counts)
     seed_title = seed_data[0][:TITLE_CLIP] # clipping to first 50 chars
 
     print("\n\tCrawling started from link titled: ", seed_title)
 
     # define variables and constants
-    list_of_site_size =[]
     prepend = "https://www.youtube.com/watch?v="
     urllist = []
     scored_list = []
-    author_count = {seed_data[3]:1}
+    if seed_data[3] in author_counts.keys():
+        author_counts[seed_data[3]] += 1
+    else:
+        author_counts[seed_data[3]] = 1
 
     # Frontier is defined as a priority queue and the seed url is added to it.
     # This is a min que and link with the lowest score will be popped first.
@@ -159,23 +185,22 @@ def smart_crawl(SeedUrl, max_pages):
             new_links = list(unique_complete_links - set(urllist))
 
         for link in new_links:
-            link_data = get_data(link)
+            link_data = get_data(link, normalized_author_counts)
             if link_data[2] == float('inf'):
                 urllist.append(link_data[1])
                 continue
             # set the score returned in link data, as priority for the queue
             priority = link_data[2]
             author = link_data[3]
-            if author not in author_count.keys(): # insert only unique authors
-                urllist.append(link_data[1])
-                author_count[author] = 1
-                pq.heappush(frontier, (priority, link_data))
-                scored_list.append(create_anchor(link_data))
-            elif author_count[author] <= max_author_count:
-                urllist.append(link_data[1])
-                author_count[author] += 1
-                pq.heappush(frontier, (priority, link_data))
-                scored_list.append(create_anchor(link_data))
+            # update author counts dict
+            if author in author_counts.keys():
+                author_counts[author] += 1
+            else:
+                author_counts[author] = 1
+
+            urllist.append(link_data[1])
+            pq.heappush(frontier, (priority, link_data))
+            scored_list.append(create_anchor(link_data))
 
         # sort data and write to html
         scored_list.sort(key=get_score)
@@ -187,11 +212,15 @@ def smart_crawl(SeedUrl, max_pages):
          + " percent crawling complete: html file named "
          + seed_title + " updated \n")
 
+    print(f"\n Crawling_Completed; html file written to {target_folder + seed_title}")
+    print(f"Author Count updated in : {path_to_author_counts_dict}")
+    with open(path_to_author_counts_dict, "w") as f:
+        json.dump(author_counts, f)
+
 if __name__ == "__main__":
     # ARGUMENTS
     SeedUrl = input("\n Enter the seed url for the crawl: ") or "https://youtu.be/fHsa9DqmId8"
     max_pages = int(input("\n Enter the number of videos to crawl (120 (default) links takes ~10 minutes): ") or "120")
-    max_author_count = int(input("\n Enter the max. num. of times you want to see author_count repeat (default=3): ") or "3")
     target_folder = input("\n Enter the target folder for the resulting html: ") or "./crawled_outputs/default_outputs/"
     if target_folder[-1]!='/':
         target_folder += '/'
@@ -203,8 +232,3 @@ if __name__ == "__main__":
     start_time = time.time()
     smart_crawl(SeedUrl, max_pages)
     print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
-
-
-# %%
-math.log10(10)
-# %%
