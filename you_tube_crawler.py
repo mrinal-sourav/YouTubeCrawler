@@ -71,7 +71,7 @@ def write_to_html(filename, sorted_list):
 def get_data(link, normalized_author_counts):
     '''Given a link to youtube video, extracts views, likes,
     and other info (title, author) to return a row of data as list.
-    normalized_author_counts is used to weight the scores of frequently 
+    normalized_author_counts is used to weight the scores of frequently
     occuring authors in all crawls done by the user.'''
 
     row = ['NA', link, float('inf'), 'NA', 0, 0, 0]
@@ -128,8 +128,8 @@ def get_data(link, normalized_author_counts):
     return row
 
 def normalize_dictionary(dictionary):
-    factor=1.0/sum(dictionary.itervalues())
-    normalised_dictionary = {k: v*factor for k, v in dictionary.iteritems()}
+    factor=1.0/sum(dictionary.values())
+    normalised_dictionary = {k: v*factor for k, v in dictionary.items()}
     return normalised_dictionary
 
 def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
