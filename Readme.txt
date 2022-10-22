@@ -21,7 +21,9 @@ Addistionaly, keyword based matching, and author count based suppression, are us
 	Score is calculated by the ratio:
 
 		No. of Views / (Likes*log10(likes))
-		Updated to (Views/Likes) since YouTube decided to remove dislikes
+		Other factors that effect the final priority is a keyword matching algorithm and 
+		the author count (as more videos from the same author accumulates, the author count deprioritizes
+		further crawling of videos from that author)
 
 	The smaller this number, the "better" the video. 
 	If EVERY person who views a video also hits "like", this score will be 1.

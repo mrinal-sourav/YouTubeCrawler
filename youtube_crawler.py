@@ -34,7 +34,8 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
     # Frontier is defined as a priority queue and the seed url is added to it.
     # This is a min que and link with the lowest score will be popped first.
     frontier = []
-    pq.heappush(frontier, (seed_data["final_score"], seed_data))
+    seed_priority = seed_data["final_score"]
+    pq.heappush(frontier, (seed_priority, seed_data))
 
     # Iteration starts with atleast one element in frontier.
     # Iteration continues till num_pages reaches the max_pages (defined by user).
@@ -72,7 +73,11 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
             priority = (link_data["final_score"] / keywords_score) * author_counts[author]
 
             urllist.append(link_data["link"])
-            median_frontier_priority = get_median_of_frontier(frontier)
+            if frontier:
+                median_frontier_priority = get_median_of_frontier(frontier)
+            else:
+                median_frontier_priority = seed_priority
+
             if priority <= median_frontier_priority:
                 pq.heappush(frontier, (priority, link_data))
                 scored_list.append(create_anchor(link_data))

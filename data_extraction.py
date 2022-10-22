@@ -12,7 +12,11 @@ from fuzzywuzzy import process
 SLEEP_TIME = 1.1
 STRING_CLIP = 50
 EPSILON = 1e-9
-KEYWORD_MATCH_THRESHOLD = 50
+KEYWORD_MATCH_THRESHOLD = 80
+
+with open("stop_words.txt", "r") as f:
+    stop_words = f.readlines()
+    stop_words_list = [x.strip('\n') for x in stop_words]
 
 def process_keywords(strng):
     lowercase_string = strng.lower()
@@ -24,7 +28,8 @@ def process_keywords(strng):
             all_words += word.split(' ')
         else:
             all_words.append(word)
-    return list(set(all_words))
+    filtered_keywords = set(all_words) - set(stop_words_list)
+    return list(filtered_keywords)
 
 def get_keywords_score(seed_keywords, match_keywords):
     """Extract a keyword match score.
@@ -34,18 +39,18 @@ def get_keywords_score(seed_keywords, match_keywords):
         match_keywords (listOfStrings): ist of processed keywords from a crawled url
     
     Returns:
-        keyword_score(0<float<=1):   The reciprocal of, the average of, thresholded match scores as returned by fuzzywuzzy process on 
-                                        each Seed keyword match. 
-        100: If no match crosses  KEYWORD_MATCH_THRESHOLD; this has the effect of increasing the final score.                        
+        keyword_score(10^count of words that match roughly):   The 10 to the power of number of words thresholded by scores as returned by fuzzywuzzy process on 
+                                                                each Seed keyword match. 
+        EPSILON: If no match crosses  KEYWORD_MATCH_THRESHOLD; this has the effect of increasing the final score.                        
     """
-    match_scores = []
+    multiplier = 0
     for seed_word in seed_keywords:
         best_match, match_score = process.extractOne(seed_word,match_keywords)
-        if match_score > KEYWORD_MATCH_THRESHOLD:
-            match_scores.append(match_score)
-    if match_scores:
-        average_score = statistics.mean(match_scores)
-        return average_score
+        if match_score >= KEYWORD_MATCH_THRESHOLD:
+            multiplier += 1
+    if multiplier > 0:
+        keyword_score = 10 ** multiplier
+        return keyword_score
     else:
         return EPSILON
 
@@ -117,27 +122,13 @@ def get_data(link):
     return row
 #%%
 ########## testing 
-# import json
-# with open("./author_counts.json", "r") as fp:
-#     author_counts = json.load(fp)
-
-# def normalize_dictionary(dictionary):
-#     factor=1.0/sum(dictionary.values())
-#     normalised_dictionary = {k: v*factor for k, v in dictionary.items()}
-#     return normalised_dictionary
-
-# author_counts = normalize_dictionary(author_counts)
 # link = "https://youtu.be/KFRQ61PnTVE?list=RDKFRQ61PnTVE"
 
-# data = get_data("https://youtu.be/KFRQ61PnTVE?list=RDKFRQ61PnTVE", author_counts)
+# data = get_data("https://youtu.be/KFRQ61PnTVE?list=RDKFRQ61PnTVE")
 
-# match_string = "ninJa, undercurent"
+# match_string = "ninJa, undercurent, vived, the rise of the planet of the memes"
 # strOptions = process_keywords(match_string)
-# # %%
+
 # print(strOptions)
 # print(get_keywords_score(data["keywords"], strOptions))
-
-# # %%
-# data["keywords"]
-
-# %%
+# print(data["keywords"], strOptions)
