@@ -8,6 +8,8 @@ import argparse
 from utils import *
 from data_extraction import *
 
+PRIORITY_PERCENTILE_THRESHOLD = 74 # To improve on quality as search progresses
+
 def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
     views/(likes - dislikes) score as the heuristic.
@@ -20,7 +22,10 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
     # get SeedUrl data
     seed_data = get_data(SeedUrl)
     seed_title = seed_data["title"]
-    seed_keywords = seed_data["keywords"]
+    if seed_data["keywords"] == "NA":
+        seed_keywords = process_keywords(seed_data["title"])
+    else:
+        seed_keywords = seed_data["keywords"]
 
     print("\n\tCrawling started from link titled: ", seed_title)
 
@@ -35,6 +40,8 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
     # This is a min que and link with the lowest score will be popped first.
     frontier = []
     seed_priority = seed_data["final_score"]
+    # define priority/score threshold for the queue
+    priority_threshold = float('inf') 
     pq.heappush(frontier, (seed_priority, seed_data))
 
     # Iteration starts with atleast one element in frontier.
@@ -58,9 +65,9 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
             new_links = list(unique_complete_links - set(urllist))
 
         for link in new_links:
+            urllist.append(link)
             link_data = get_data(link)
             if link_data["final_score"] == float('inf'):
-                urllist.append(link_data["link"])
                 continue
             author = link_data["author"]
             # update author counts dict
@@ -69,16 +76,15 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
             else:
                 author_counts[author] = 1
 
-            keywords_score = get_keywords_score(seed_keywords, link_data["keywords"])
+            if link_data["keywords"] == "NA":
+                link_keywords = process_keywords(link_data["title"])
+            else:
+                link_keywords = link_data["keywords"]
+
+            keywords_score = get_keywords_score(seed_keywords, link_keywords)
             priority = (link_data["final_score"] / keywords_score) * author_counts[author]
 
-            urllist.append(link_data["link"])
-            if frontier:
-                median_frontier_priority = get_median_of_frontier(frontier)
-            else:
-                median_frontier_priority = seed_priority
-
-            if priority <= median_frontier_priority:
+            if priority <= priority_threshold:
                 pq.heappush(frontier, (priority, link_data))
                 scored_list.append(create_anchor(link_data))
 
@@ -92,10 +98,10 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
          + " percent crawling complete: html file named "
          + seed_title + " updated \n")
 
+        # update priority threshold based on frontier
+        priority_threshold = get_percentile_of_frontier(frontier, PRIORITY_PERCENTILE_THRESHOLD)
+
     print(f"\n Crawling_Completed; html file written to {target_folder + seed_title}")
-    print(f"Author Count updated in : {path_to_author_counts_dict}")
-    with open(path_to_author_counts_dict, "w") as f:
-        json.dump(author_counts, f)
 
 if __name__ == "__main__":
     # ARGUMENTS
@@ -106,7 +112,7 @@ if __name__ == "__main__":
         target_folder += '/'
     if target_folder[0]=='/':
         target_folder = target_folder[1:]
-    target_folder = "./crawled_outputs/" + target_folder
+    target_folder = "./crawled_outputs/" + target_folder.lower()
     Path(target_folder).mkdir(parents=True, exist_ok=True)
 
     start_time = time.time()

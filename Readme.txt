@@ -38,7 +38,7 @@ Addistionaly, keyword based matching, and author count based suppression, are us
 
   Enter the seed url for the crawl: https://www.youtube.com/c/VEVO/videos?view=0&sort=p&flow=grid
 
- Enter the number of videos to crawl (120 (default) links takes ~10 minutes): 
+ Enter the number of videos to crawl (200 (default) links take ~12 minutes): 
 
  Enter the max. num. of times you want to see authors repeat (default=3): 
 
@@ -80,11 +80,13 @@ Addistionaly, keyword based matching, and author count based suppression, are us
 
  - IMPORTANT NOTES: 
 
-	WAIT TIME IS ADDED FOR "POLITENESS POLICY" WHILE CRAWLING. (set to 1.2 seconds) 
+	WAIT TIME IS ADDED FOR "POLITENESS POLICY" WHILE CRAWLING. (set to 1.1 seconds) 
 	PLEASE DO NOT REDUCE IT LEST YOUTUBE THINKS YOU ARE A BOT. 
 
 	Actual number of urls in the crawled file may have slightly more links than specified. Links gathered may 
-	differ based on geographic location crawled from.   
+	differ based on geographic location crawled from. Some popular videos by location may still show up despite
+	little relation to the source link provided. Time taken and scores vary depending on the stats for the 
+	source video provided. 
 
 	Code for writing to html is inspired from: 
 	https://vidigest.com/2018/12/02/generating-an-html-table-from-file-data-using-python-3/  

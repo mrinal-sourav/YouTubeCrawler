@@ -24,10 +24,11 @@ def process_keywords(strng):
     all_words = []
     for word in keywords:
         word = word.strip()
-        if ' ' in word:
-            all_words += word.split(' ')
-        else:
-            all_words.append(word)
+        if len(word) > 3:
+            if ' ' in word:
+                all_words += word.split(' ')
+            else:
+                all_words.append(word)
     filtered_keywords = set(all_words) - set(stop_words_list)
     return list(filtered_keywords)
 
@@ -36,20 +37,20 @@ def get_keywords_score(seed_keywords, match_keywords):
 
     Args:
         seed_keywords (listOfStrings): list of processed keywords from the SeedURL
-        match_keywords (listOfStrings): ist of processed keywords from a crawled url
+        match_keywords (listOfStrings): list of processed keywords from a crawled url
     
     Returns:
         keyword_score(10^count of words that match roughly):   The 10 to the power of number of words thresholded by scores as returned by fuzzywuzzy process on 
                                                                 each Seed keyword match. 
         EPSILON: If no match crosses  KEYWORD_MATCH_THRESHOLD; this has the effect of increasing the final score.                        
     """
-    multiplier = 0
+    exponent = 0
     for seed_word in seed_keywords:
         best_match, match_score = process.extractOne(seed_word,match_keywords)
         if match_score >= KEYWORD_MATCH_THRESHOLD:
-            multiplier += 1
-    if multiplier > 0:
-        keyword_score = 10 ** multiplier
+            exponent += 1
+    if exponent > 0:
+        keyword_score = 10 ** exponent
         return keyword_score
     else:
         return EPSILON
@@ -85,7 +86,7 @@ def get_data(link):
                 row["author"] = re.sub(r'\W+', ' ', author)
                 row["author"] = row["author"][:STRING_CLIP]
 
-            # get views, likes, dislikes.
+            # get views, likes, keyword score.
             try:
                 views = re.findall('''{["]viewCount["]:{["]simpleText["]:["](.+?) views["]}''',
                                     theSite,
@@ -105,7 +106,7 @@ def get_data(link):
                     likes+=1
 
                 score = views/likes
-                # dividing further by log10 to prioritize higher number of likes
+                # dividing further by log10 of likes to prioritize higher number of likes
                 row["final_score"] = score / (math.log10(likes+10)) # addding 10 to avoid divide by 0
                 row["views"] = views
                 row["likes"] = likes
@@ -132,3 +133,4 @@ def get_data(link):
 # print(strOptions)
 # print(get_keywords_score(data["keywords"], strOptions))
 # print(data["keywords"], strOptions)
+# %%

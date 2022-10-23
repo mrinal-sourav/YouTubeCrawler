@@ -66,6 +66,6 @@ def normalize_dictionary(dictionary):
     normalised_dictionary = {k: v*factor for k, v in dictionary.items()}
     return normalised_dictionary
 
-def get_median_of_frontier(frontier):
+def get_percentile_of_frontier(frontier, percentile):
     all_scores = [tuple[0] for tuple in frontier]
-    return statistics.median(all_scores)
+    return statistics.quantiles(all_scores, n=100)[percentile]
