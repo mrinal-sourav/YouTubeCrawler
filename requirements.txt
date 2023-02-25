@@ -1,2 +1,4 @@
-python-Levenshtein==0.20.7
-fuzzywuzzy==0.18.0
+python-Levenshtein>=0.20.7
+fuzzywuzzy>=0.18.0
+numpy>=1.19.1
+argparse>=1.1

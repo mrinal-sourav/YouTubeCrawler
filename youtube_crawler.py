@@ -8,6 +8,8 @@ import argparse
 from utils import *
 from data_extraction import *
 
+from argparse import ArgumentParser
+
 PRIORITY_PERCENTILE_THRESHOLD = 74 # To improve on quality as search progresses
 
 def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
@@ -18,7 +20,7 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
         SeedUrl ([string]): The link to start crawling from.
         max_pages ([int]): The number of videos to crawl.
     """
-    
+
     # get SeedUrl data
     seed_data = get_data(SeedUrl)
     seed_title = seed_data["title"]
@@ -41,7 +43,7 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
     frontier = []
     seed_priority = seed_data["final_score"]
     # define priority/score threshold for the queue
-    priority_threshold = float('inf') 
+    priority_threshold = float('inf')
     pq.heappush(frontier, (seed_priority, seed_data))
 
     # Iteration starts with atleast one element in frontier.
@@ -101,13 +103,36 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
         # update priority threshold based on frontier
         priority_threshold = get_percentile_of_frontier(frontier, PRIORITY_PERCENTILE_THRESHOLD)
 
-    print(f"\n Crawling_Completed; html file written to {target_folder + seed_title}")
+    print(f"\n Crawling completed; html file written to {target_folder + seed_title}")
 
 if __name__ == "__main__":
     # ARGUMENTS
-    SeedUrl = input("\n Enter the seed url for the crawl: ") or "https://youtu.be/fHsa9DqmId8"
-    max_pages = int(input("\n Enter the number of videos to crawl (200 (default) links takes ~10 minutes): ") or "200")
-    target_folder = input("\n Enter the target folder for the resulting html: ") or "./crawled_outputs/default_outputs/"
+    parser = ArgumentParser()
+    parser.add_argument(
+        "-s",
+        "--seedUrl",
+        help="The seed url to start the crawling from.",
+        default="https://youtu.be/fHsa9DqmId8"
+        )
+    parser.add_argument(
+        "-o",
+        "--outputDir",
+        help="Path to the output directory for the resulting html. Defaults to ./crawled_outputs/default_outputs/",
+        default="default_outputs/"
+        )
+    parser.add_argument(
+        "-n",
+        "--numVideos",
+        type=int,
+        help="the number of videos to crawl : (200 (default) links takes ~10 minutes)",
+        default=200
+        )
+
+    args = parser.parse_args()
+    SeedUrl = args.seedUrl
+    target_folder = args.outputDir
+    max_pages = args.numVideos
+
     if target_folder[-1]!='/':
         target_folder += '/'
     if target_folder[0]=='/':

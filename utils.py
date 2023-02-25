@@ -1,6 +1,6 @@
 
 import json
-import statistics
+import numpy as np
 
 # helper function to create hyperlinked text for html
 def create_anchor(link_data):
@@ -67,5 +67,6 @@ def normalize_dictionary(dictionary):
     return normalised_dictionary
 
 def get_percentile_of_frontier(frontier, percentile):
-    all_scores = [tuple[0] for tuple in frontier]
-    return statistics.quantiles(all_scores, n=100)[percentile]
+    all_scores = np.array([tuple[0] for tuple in frontier])
+    percentile = np.percentile(all_scores,percentile)
+    return percentile
