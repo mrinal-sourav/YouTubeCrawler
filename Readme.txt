@@ -111,7 +111,7 @@ optional arguments:
 	 - Actual number of urls in the crawled file may have slightly more links than specified.
         - Links gathered may differ based on geographic location crawled from.
         - Some popular videos by location may still show up despite little relation to the source link provided.
-        - Time taken and scores vary depending on factors like the stats for the source video provided, vpn used etc.
+        - Time taken and scores vary depending on factors like the stats for the source video provided, vpn etc.
 
 	Code for writing to html is inspired from:
 	https://vidigest.com/2018/12/02/generating-an-html-table-from-file-data-using-python-3/
