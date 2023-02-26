@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 
 PRIORITY_QUANTILE_THRESHOLD = .75 # To improve on quality as search progresses
 
-def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
+def smart_crawl(SeedUrl, max_pages):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
     views/(likes - dislikes) score as the heuristic.
 
