@@ -2,15 +2,14 @@
 import time
 import heapq as pq
 from pathlib import Path
-import argparse
+from argparse import ArgumentParser
 
 # local imports
 from utils import *
 from data_extraction import *
 
-from argparse import ArgumentParser
-
-PRIORITY_QUANTILE_THRESHOLD = .75 # To improve on quality as search progresses
+# To improve on quality as search progresses, lower the better; reduces crawl speed.
+PRIORITY_QUANTILE_THRESHOLD = .75
 
 def smart_crawl(SeedUrl, max_pages):
     """To crawl youtube with A_Star (hill-climbing) algorithm using

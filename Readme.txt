@@ -1,6 +1,6 @@
 This YouTube crawler crawls youtube starting from a SeedUrl provided by the user. It uses a hillclimbing algorithm based on views/(likes) score of videos. The hypotheses being; videos with good content will have more likes per views. Here's a video from Veritasium that explains how YouTube does not do a great job of providing users with good recommendations: https://youtu.be/fHsa9DqmId8
 As such, users may benifit from a rather explorative approach from this crawler to diversify their finds on Youtube.
-Addistionaly, keyword based matching, and author count based suppression, are used to further refine the results.
+Additionaly, keyword based matching, and author count based suppression, are used to further refine the results.
 
  - Code requirements are captured in "requirements.txt",
  other imports should be inbuilt in python 3.5 +.
