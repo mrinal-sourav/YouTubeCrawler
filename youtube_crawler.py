@@ -10,7 +10,7 @@ from data_extraction import *
 
 from argparse import ArgumentParser
 
-PRIORITY_PERCENTILE_THRESHOLD = 74 # To improve on quality as search progresses
+PRIORITY_QUANTILE_THRESHOLD = .75 # To improve on quality as search progresses
 
 def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.json"):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
@@ -101,7 +101,7 @@ def smart_crawl(SeedUrl, max_pages, path_to_author_counts_dict="author_counts.js
          + seed_title + " updated \n")
 
         # update priority threshold based on frontier
-        priority_threshold = get_percentile_of_frontier(frontier, PRIORITY_PERCENTILE_THRESHOLD)
+        priority_threshold = get_quantile_of_frontier(frontier, PRIORITY_QUANTILE_THRESHOLD)
 
     print(f"\n Crawling completed; html file written to {target_folder + seed_title}")
 

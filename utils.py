@@ -66,7 +66,7 @@ def normalize_dictionary(dictionary):
     normalised_dictionary = {k: v*factor for k, v in dictionary.items()}
     return normalised_dictionary
 
-def get_percentile_of_frontier(frontier, percentile):
+def get_quantile_of_frontier(frontier, quantile):
     all_scores = np.array([tuple[0] for tuple in frontier])
-    percentile = np.percentile(all_scores,percentile)
-    return percentile
+    quantile = np.quantile(all_scores,quantile)
+    return quantile

@@ -10,12 +10,9 @@ def find_repo(path):
         if git_dir.is_dir():
             return path
 
-# Find the repo root where the script is
-find_repo("./music/english/Friction Imagine Dragons Audio YouTube.html")
-
 
 # To create html table from data and write to filename
-def write_to_html2(filename, sorted_list):
+def write_to_html2(target_folder, filename, sorted_list):
     table = "<table>\n"
     # Create the table's column headers
     header = ['Title', 'Score', 'Author', 'Views', 'Likes']
