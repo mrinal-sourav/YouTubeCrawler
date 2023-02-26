@@ -50,14 +50,17 @@ def get_keywords_score(seed_keywords, match_keywords):
 
         EPSILON: If no match crosses  KEYWORD_MATCH_THRESHOLD; this has the effect of increasing the final score.
     """
-    exponent = 0
-    for seed_word in seed_keywords:
-        best_match, match_score = process.extractOne(seed_word,match_keywords)
-        if match_score >= KEYWORD_MATCH_THRESHOLD:
-            exponent += 1
-    if exponent > 0:
-        keyword_score = 10 ** exponent
-        return keyword_score
+    if match_keywords:
+        exponent = 0
+        for seed_word in seed_keywords:
+            best_match, match_score = process.extractOne(seed_word,match_keywords)
+            if match_score >= KEYWORD_MATCH_THRESHOLD:
+                exponent += 1
+        if exponent > 0:
+            keyword_score = 10 ** exponent
+            return keyword_score
+        else:
+            return EPSILON
     else:
         return EPSILON
 
