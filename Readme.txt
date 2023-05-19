@@ -22,7 +22,10 @@ optional arguments:
                         Defaults to ./crawled_outputs/default_outputs/
   -n NUMVIDEOS, --numVideos NUMVIDEOS
                         the number of videos to crawl : (200 (default) links
-                        takes ~12 minutes)
+                        takes ~10 minutes)
+  -a MAXAUTHORCOUNT, --maxAuthorCount MAXAUTHORCOUNT
+                        maximum author count to skip crawling videos of the
+                        same auther beyong this number
 
  - Outputs:
 	A sorted html file; written to the outputDir provided in "crawled_outputs" folder.
