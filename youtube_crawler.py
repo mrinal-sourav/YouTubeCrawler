@@ -9,9 +9,9 @@ from utils import *
 from data_extraction import *
 
 # To improve on quality as search progresses, lower the better; reduces crawl speed.
-PRIORITY_QUANTILE_THRESHOLD = .75
+PRIORITY_QUANTILE_THRESHOLD = .85
 
-def smart_crawl(SeedUrl, max_pages):
+def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
     views/(likes - dislikes) score as the heuristic.
 
@@ -77,6 +77,10 @@ def smart_crawl(SeedUrl, max_pages):
             else:
                 author_counts[author] = 1
 
+            # skip link if author count reaches maximum
+            if author_counts[author] > max_author_count:
+                continue
+
             if link_data["keywords"] == "NA":
                 link_keywords = process_keywords(link_data["title"])
             else:
@@ -126,11 +130,19 @@ if __name__ == "__main__":
         help="the number of videos to crawl : (200 (default) links takes ~10 minutes)",
         default=200
         )
+    parser.add_argument(
+        "-a",
+        "--maxAuthorCount",
+        type=int,
+        help="maximum author count to skip crawling videos of the same auther beyong this number",
+        default=5
+        )
 
     args = parser.parse_args()
     SeedUrl = args.seedUrl
     target_folder = args.outputDir
     max_pages = args.numVideos
+    max_author_count = args.maxAuthorCount
 
     if target_folder[-1]!='/':
         target_folder += '/'
@@ -140,5 +152,5 @@ if __name__ == "__main__":
     Path(target_folder).mkdir(parents=True, exist_ok=True)
 
     start_time = time.time()
-    smart_crawl(SeedUrl, max_pages)
+    smart_crawl(SeedUrl, max_pages, target_folder, max_author_count)
     print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
