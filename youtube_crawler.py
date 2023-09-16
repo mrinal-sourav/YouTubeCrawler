@@ -104,7 +104,8 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
          + seed_title + " updated \n")
 
         # update priority threshold based on frontier
-        priority_threshold = get_quantile_of_frontier(frontier, PRIORITY_QUANTILE_THRESHOLD)
+        if frontier:
+            priority_threshold = get_quantile_of_frontier(frontier, PRIORITY_QUANTILE_THRESHOLD)
 
     print(f"\n Crawling completed; html file written to {target_folder + seed_title}")
 
