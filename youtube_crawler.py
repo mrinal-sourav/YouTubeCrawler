@@ -9,7 +9,7 @@ from utils import *
 from data_extraction import *
 
 # To improve on quality as search progresses, lower the better; reduces crawl speed.
-PRIORITY_QUANTILE_THRESHOLD = .85
+PRIORITY_QUANTILE_THRESHOLD = .90
 
 def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
@@ -99,15 +99,17 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
 
         # update progress
         percentage_completed = (len(scored_list) / max_pages) * 100
-        print("\n\t" + str(percentage_completed)[:5]
-         + " percent crawling complete: html file named "
-         + seed_title + " updated \n")
+        print("\n\t" + str(percentage_completed)[:5] + " percent crawling complete")
+        print("\t")
+
+        path_to_file = Path(target_folder + "/" + seed_title + ".html").resolve()
+        print(f"file updated @ : {path_to_file}")
 
         # update priority threshold based on frontier
         if frontier:
             priority_threshold = get_quantile_of_frontier(frontier, PRIORITY_QUANTILE_THRESHOLD)
 
-    print(f"\n Crawling completed; html file written to {target_folder + seed_title}")
+    print(f"\n Crawling completed @ : {target_folder + seed_title}.html")
 
 if __name__ == "__main__":
     # ARGUMENTS
