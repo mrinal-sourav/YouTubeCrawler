@@ -14,8 +14,14 @@ KEYWORD_MATCH_THRESHOLD = 80
 
 
 # REGEX PATTERNS
-LIKES_REGEX_PATTERN = re.compile(r'"accessibility":{"accessibilityData":{"label":"[\d,.]+ likes"}}')
+# The likes regex finds matches only if there is a subscript like K,M,B 
+# with the number. So this filters out videos with <1000 likes
+LIKES_REGEX_PATTERN = re.compile(r'"accessibilityText":"[\d,.]+[A-Z] likes"}')
+
 VIEWS_REGEX_PATTERN = re.compile(r'"allowRatings":true,"viewCount":"[\d,.]+","author"')
+
+DIGIT_WITHOUT_CHAR = re.compile(r'\d+')
+DIGIT_PATTERN = re.compile(r'\d+[A-Z]')
 
 # list of stop words
 with open("stop_words.txt", "r") as f:
@@ -73,13 +79,35 @@ def extract_from_regex(regex_pattern, strng):
     else:
         return "No match found."
 
+def convert_to_integer(number_str):
+    """courtesy #chatGPT"""
+
+    suffixes = {
+        'K': 1000,
+        'M': 1000000,
+        'B': 1000000000
+    }
+
+    if number_str[-1] in suffixes:
+        multiplier = suffixes[number_str[-1]]
+        return int(float(number_str[:-1]) * multiplier)
+    else:
+        return int(float(number_str))
+
 def extract_integers(strng):
-    pattern = re.compile(r'\d+')
-    matches = pattern.findall(strng)
-    return int(matches[0])
+    number_with_char = DIGIT_PATTERN.findall(strng)
+    just_number = DIGIT_WITHOUT_CHAR.findall(strng)
+    if len(just_number) == 2:
+        number_str = ".".join(just_number)
+    else:
+        number_str = just_number[0]
+    if number_with_char:
+        number_str += number_with_char[0][-1]
+    return convert_to_integer(number_str)
 
 def get_data(link):
-    '''Given a link to youtube video, extracts views, likes,
+    '''
+    Given a link to youtube video, extracts views, likes,
     and other info (title, author, keywords) to return a row of data as dict.
     '''
 
@@ -93,6 +121,7 @@ def get_data(link):
         "keywords": "NA"
         }
 
+    # print(link)
     time.sleep(SLEEP_TIME)
     try:
         with urllib.request.urlopen(link) as url:
@@ -111,6 +140,7 @@ def get_data(link):
 
             # get likes
             likes_strng = extract_from_regex(LIKES_REGEX_PATTERN, theSite)
+            # print(likes_strng)
             if likes_strng == "No match found.":
                 return row
             likes = extract_integers(likes_strng)
@@ -144,4 +174,8 @@ def get_data(link):
 ########## testing
 # print(get_data("https://youtu.be/bmUxvX2z5N0?list=RDMM"))
 
+# # %%
+# x = "\"accessibilityText\":\"14 likes\"}"
+# # %%
+# extract_integers(x)
 # %%
