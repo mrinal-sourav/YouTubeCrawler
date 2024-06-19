@@ -14,11 +14,8 @@ KEYWORD_MATCH_THRESHOLD = 80
 
 
 # REGEX PATTERNS
-# The likes regex finds matches only if there is a subscript like K,M,B 
-# with the number. So this filters out videos with <1000 likes
-LIKES_REGEX_PATTERN = re.compile(r'"accessibilityText":"[\d,.]+[A-Z] likes"}')
-
-VIEWS_REGEX_PATTERN = re.compile(r'"allowRatings":true,"viewCount":"[\d,.]+","author"')
+LIKES_REGEX = re.compile(r'"accessibilityText":"[\d,.KMB]+ likes"}')
+VIEWS_REGEX = re.compile(r'"allowRatings":true,"viewCount":"[\d,.KMB]+","author"')
 
 DIGIT_WITHOUT_CHAR = re.compile(r'\d+')
 DIGIT_PATTERN = re.compile(r'\d+[A-Z]')
@@ -27,7 +24,6 @@ DIGIT_PATTERN = re.compile(r'\d+[A-Z]')
 with open("stop_words.txt", "r") as f:
     stop_words = f.readlines()
     stop_words_list = [x.strip('\n') for x in stop_words]
-
 
 ###### helper functions
 def process_keywords(strng):
@@ -139,8 +135,7 @@ def get_data(link):
                 row["author"] = row["author"][:STRING_CLIP]
 
             # get likes
-            likes_strng = extract_from_regex(LIKES_REGEX_PATTERN, theSite)
-            # print(likes_strng)
+            likes_strng = extract_from_regex(LIKES_REGEX, theSite)
             if likes_strng == "No match found.":
                 return row
             likes = extract_integers(likes_strng)
@@ -149,7 +144,7 @@ def get_data(link):
                 likes+=1
 
             # get views
-            views_strng = extract_from_regex(VIEWS_REGEX_PATTERN, theSite)
+            views_strng = extract_from_regex(VIEWS_REGEX, theSite)
             if views_strng == "No match found.":
                 return row
             views = extract_integers(views_strng)
@@ -172,7 +167,8 @@ def get_data(link):
 
 #%%
 ########## testing
-# print(get_data("https://youtu.be/bmUxvX2z5N0?list=RDMM"))
+# print(get_data("https://youtu.be/NknjE2SBPxw"))
+# print(get_data("https://youtu.be/CVU1Mv9e-0U"))
 
 # # %%
 # x = "\"accessibilityText\":\"14 likes\"}"
