@@ -1,5 +1,6 @@
 #%%
 import time
+import logging
 import heapq as pq
 from pathlib import Path
 from argparse import ArgumentParser
@@ -11,6 +12,14 @@ from data_extraction import *
 # To improve on quality as search progresses, lower the better; reduces crawl speed.
 PRIORITY_QUANTILE_THRESHOLD = .90
 
+# Set up logging
+logging.basicConfig(
+    filename='smart_crawl.log',
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG
+)
+
 def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     """To crawl youtube with A_Star (hill-climbing) algorithm using
     views/(likes - dislikes) score as the heuristic.
@@ -20,6 +29,8 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
         max_pages ([int]): The number of videos to crawl.
     """
 
+    logging.info("Crawling started with seed URL: %s", SeedUrl)
+
     # get SeedUrl data
     seed_data = get_data(SeedUrl)
     seed_title = seed_data["title"]
@@ -28,7 +39,7 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     else:
         seed_keywords = seed_data["keywords"]
 
-    print("\n\tCrawling started from link titled: ", seed_title)
+    logging.info("Crawling started from link titled: %s", seed_title)
 
     # define variables and constants
     prepend = "https://www.youtube.com/watch?v="
@@ -99,17 +110,16 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
 
         # update progress
         percentage_completed = (len(scored_list) / max_pages) * 100
-        print("\n\t" + str(percentage_completed)[:5] + " percent crawling complete")
-        print("\t")
+        logging.info("%s percent crawling complete", str(percentage_completed)[:5])
 
         path_to_file = Path(target_folder + "/" + seed_title + ".html").resolve()
-        print(f"file updated @ : {path_to_file}")
+        logging.info("File updated @ : %s", path_to_file)
 
         # update priority threshold based on frontier
         if frontier:
             priority_threshold = get_quantile_of_frontier(frontier, PRIORITY_QUANTILE_THRESHOLD)
 
-    print(f"\n Crawling completed @ : {target_folder + seed_title}.html")
+    logging.info("Crawling completed @ : %s.html", target_folder + seed_title)
 
 if __name__ == "__main__":
     # ARGUMENTS
@@ -155,5 +165,6 @@ if __name__ == "__main__":
     Path(target_folder).mkdir(parents=True, exist_ok=True)
 
     start_time = time.time()
+    print("crawling ... find progress in log file: smart_crawl.log ")
     smart_crawl(SeedUrl, max_pages, target_folder, max_author_count)
-    print("\n\t--- Crawl took %s seconds ---" % (time.time() - start_time))
+    print(f"--- Crawl took {(time.time() - start_time)} seconds ---")

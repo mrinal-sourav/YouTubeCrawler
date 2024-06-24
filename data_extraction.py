@@ -5,6 +5,9 @@ import time
 import math
 from fuzzywuzzy import process
 
+import logging
+logger = logging.getLogger(__name__)
+
 ###### CONSTANTS
 # SLEEP_TIME time is added for politeness policy while crawling; do not reduce.
 SLEEP_TIME = 1.1
@@ -117,10 +120,12 @@ def get_data(link):
         "keywords": "NA"
         }
 
-    # print(link)
     time.sleep(SLEEP_TIME)
     try:
         with urllib.request.urlopen(link) as url:
+
+            logger.info(f"Link = {link}")
+
             theSite=str(url.read())
 
             # get title
@@ -137,17 +142,21 @@ def get_data(link):
             # get likes
             likes_strng = extract_from_regex(LIKES_REGEX, theSite)
             if likes_strng == "No match found.":
+                logger.info(f"likes string not found")
                 return row
             likes = extract_integers(likes_strng)
             # handle edge cases, prevent divide by zero etc.
             if likes==0:
                 likes+=1
+            logger.info(f"Likes = {likes}")
 
             # get views
             views_strng = extract_from_regex(VIEWS_REGEX, theSite)
             if views_strng == "No match found.":
+                logger.info(f"views string not found")
                 return row
             views = extract_integers(views_strng)
+            logger.info(f"Views = {views}")
 
             # get keywords
             keywords = re.findall('''<meta name="keywords" content="(.+?)"><''',theSite,re.DOTALL)[0]
@@ -161,17 +170,15 @@ def get_data(link):
             row["likes"] = likes
 
     except:
-        print(f"Issue extracting data for {link}")
+        logger.info(f"Issue extracting data for {link}")
 
     return row
 
 #%%
 ########## testing
-# print(get_data("https://youtu.be/NknjE2SBPxw"))
-# print(get_data("https://youtu.be/CVU1Mv9e-0U"))
+# # print(get_data("https://youtu.be/CVU1Mv9e-0U"))
 
 # # %%
 # x = "\"accessibilityText\":\"14 likes\"}"
 # # %%
 # extract_integers(x)
-# %%
