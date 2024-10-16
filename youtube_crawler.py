@@ -37,7 +37,7 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     if seed_data["keywords"] == "NA":
         seed_keywords = process_keywords(seed_data["title"])
     else:
-        seed_keywords = seed_data["keywords"]
+        seed_keywords = seed_data["keywords"] + process_keywords(seed_data["title"])
 
     logging.info("Crawling started from link titled: %s", seed_title)
 
