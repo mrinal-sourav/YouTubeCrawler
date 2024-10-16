@@ -39,71 +39,30 @@ optional arguments:
 		the author count (as more videos from the same author accumulates, priority for the same auther reduces)
 
 	The smaller this number, the "better" the video.
-	If EVERY person who views a video also hits "like", this score will be ~1.
+	If EVERY person who views a video also hits "like", this score will approach 1.
 
  - Sample command (Updated 25th Feb 2023):
-	python3 youtube_crawler.py --seedUrl https://youtu.be/Tb0MC0jFv6M?list=RDMM --numVideos 100
+	python3 youtube_crawler.py -s https://youtu.be/ROEL3bOWk80 -o music/english
+	crawling ... find progress in log file: smart_crawl.log
+	--- Crawl took 1207.4183235168457 seconds ---
 
-	Crawling started from link titled:  Teardrop Remastered 2019 YouTube
+	Log file contains:
 
-	41.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
+	2024-06-24 12:20:01,824 - INFO - Crawling started with seed URL: https://youtu.be/ROEL3bOWk80
+	2024-06-24 12:20:03,331 - INFO - Link = https://youtu.be/ROEL3bOWk80
+	2024-06-24 12:20:03,927 - INFO - Likes = 37000
+	2024-06-24 12:20:03,928 - INFO - Views = 2709839
+	2024-06-24 12:20:03,929 - INFO - Crawling started from link titled: Nothing But Thieves Broken Machine Live for IAMWHO
+	2024-06-24 12:20:07,378 - INFO - Link = https://www.youtube.com/watch?v=I6g-FUVDdxw
+	2024-06-24 12:20:08,100 - INFO - Likes = 39000
+	2024-06-24 12:20:08,101 - INFO - Views = 4436747
 
+	......
 
-	49.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
+	2024-06-24 12:20:54,685 - INFO - 7.000 percent crawling complete
+	2024-06-24 12:20:54,685 - INFO - File updated @ : /home/mrinal/Documents/Projects/YouTubeCrawler/crawled_outputs/music/english/Nothing But Thieves Broken Machine Live for IAMWHO.html
 
-
-	51.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	56.00 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	62.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	64.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	70.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	81.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	84.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	88.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	91.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	92.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	94.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	98.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	99.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	100.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	100.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
-	102.0 percent crawling complete: html file named Teardrop Remastered 2019 YouTube updated 
-
-
- Crawling_Completed; html file written to ./crawled_outputs/./default_outputs/Teardrop Remastered 2019 YouTube
-
-	--- Crawl took 327.46410179138184 seconds ---
-
+	......
 
  - IMPORTANT NOTES:
 

@@ -145,9 +145,9 @@ def get_data(link):
                 logger.info(f"likes string not found")
                 return row
             likes = extract_integers(likes_strng)
-            # handle edge cases, prevent divide by zero etc.
-            if likes==0:
-                likes+=1
+            if likes<100:
+                logger.info(f"likes less than hundred")
+                return row
             logger.info(f"Likes = {likes}")
 
             # get views
@@ -176,9 +176,12 @@ def get_data(link):
 
 #%%
 ########## testing
-# # print(get_data("https://youtu.be/CVU1Mv9e-0U"))
+# print(get_data("https://youtu.be/CVU1Mv9e-0U"))
+
 
 # # %%
 # x = "\"accessibilityText\":\"14 likes\"}"
 # # %%
 # extract_integers(x)
+
+# %%

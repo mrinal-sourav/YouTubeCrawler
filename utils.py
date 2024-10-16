@@ -1,6 +1,9 @@
-
+#%%
 import json
 import numpy as np
+
+
+#%%
 
 # helper function to create hyperlinked text for html
 def create_anchor(link_data):
@@ -70,3 +73,6 @@ def get_quantile_of_frontier(frontier, quantile):
     all_scores = np.array([tuple[0] for tuple in frontier])
     quantile = np.quantile(all_scores,quantile)
     return quantile
+
+
+# %%

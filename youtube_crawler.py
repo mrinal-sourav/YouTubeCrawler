@@ -95,7 +95,7 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
             if link_data["keywords"] == "NA":
                 link_keywords = process_keywords(link_data["title"])
             else:
-                link_keywords = link_data["keywords"]
+                link_keywords = link_data["keywords"] + process_keywords(link_data["title"])
 
             keywords_score = get_keywords_score(seed_keywords, link_keywords)
             priority = (link_data["final_score"] / keywords_score) * author_counts[author]
