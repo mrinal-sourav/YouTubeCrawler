@@ -52,13 +52,11 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
     # This is a min que and link with the lowest score will be popped first.
     frontier = []
     seed_priority = seed_data["final_score"]
-    # define priority/score threshold for the queue
-    priority_threshold = float('inf')
     pq.heappush(frontier, (seed_priority, seed_data))
 
     # Iteration starts with atleast one element in frontier.
     # Iteration continues till num_pages reaches the max_pages (defined by user).
-    # The loop is structured like bfs using a prio queue (a*) starting from the seed url.
+    # The loop is structured like bfs using a prio queue (hill-climbing) starting from the seed url.
     while frontier and (len(scored_list) <= max_pages):
         # current_url is populated starting with the seed url
         _ , current_node = pq.heappop(frontier)
@@ -100,9 +98,8 @@ def smart_crawl(SeedUrl, max_pages, target_folder, max_author_count):
             keywords_score = get_keywords_score(seed_keywords, link_keywords)
             priority = (link_data["final_score"] / keywords_score) * author_counts[author]
 
-            if priority <= priority_threshold:
-                pq.heappush(frontier, (priority, link_data))
-                scored_list.append(create_anchor(link_data))
+            pq.heappush(frontier, (priority, link_data))
+            scored_list.append(create_anchor(link_data))
 
         # sort data and write to html
         scored_list.sort(key=get_score)
@@ -141,7 +138,7 @@ if __name__ == "__main__":
         "--numVideos",
         type=int,
         help="the number of videos to crawl : (200 (default) links takes ~10 minutes)",
-        default=200
+        default=400
         )
     parser.add_argument(
         "-a",

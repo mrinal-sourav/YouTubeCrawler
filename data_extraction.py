@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 ###### CONSTANTS
 # SLEEP_TIME time is added for politeness policy while crawling; do not reduce.
-SLEEP_TIME = 1.1
+SLEEP_TIME = 1.02
 STRING_CLIP = 50
 EPSILON = 1e-9
 KEYWORD_MATCH_THRESHOLD = 80
+LIKES_LIMIT = 2000
 
 
 # REGEX PATTERNS
@@ -145,7 +146,7 @@ def get_data(link):
                 logger.info(f"likes string not found")
                 return row
             likes = extract_integers(likes_strng)
-            if likes<100:
+            if likes<LIKES_LIMIT:
                 logger.info(f"likes less than hundred")
                 return row
             logger.info(f"Likes = {likes}")
