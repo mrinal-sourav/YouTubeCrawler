@@ -110,6 +110,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
             priority = (link_data["final_score"] / keywords_score)
             link_data["priority"] = priority
             logger.info(f"priority: {priority}")
+            logger.info(f"length of frontier: {len(frontier)}")
 
             pq.heappush(frontier, (priority, link_data))
             scored_list.append(link_data)
@@ -121,7 +122,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
 
         # update progress
         percentage_completed = (len(score_df) / max_pages) * 100
-        print("%s percent crawling complete", str(percentage_completed)[:5])
+        print(f"{str(percentage_completed)[:5]} % crawling complete")
         logging.info("%s percent crawling complete", str(percentage_completed)[:5])
 
         # # update priority threshold based on frontier
