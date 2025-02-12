@@ -116,7 +116,7 @@ def get_data(link):
         "likes":0,
         "keywords": [],
         "is_seed": False,
-        "priority": float('inf')
+        "priority": EPSILON # only relevant to seed urls
         }
 
     time.sleep(SLEEP_TIME)

@@ -42,7 +42,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
     frontier = []
     all_seed_keywords = []
     author_counts = {}
-    for SeedUrl in SeedUrls:
+    for indx, SeedUrl in enumerate(SeedUrls):
         seed_data = get_data(SeedUrl)
         all_titles.append(seed_data["title"])
         author = seed_data["author"]
@@ -53,8 +53,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
             author_counts[author] = 1
 
         seed_data["is_seed"] = True
-        seed_data["priority"] = seed_data["final_score"]
-        pq.heappush(frontier, (seed_data["final_score"], seed_data))
+        pq.heappush(frontier, (-indx, seed_data))
         scored_list.append(seed_data)
         all_seed_keywords += seed_data["keywords"]
     all_seed_keywords = list(set(all_seed_keywords))
@@ -138,7 +137,7 @@ if __name__ == "__main__":
         "-c",
         "--config_path",
         help="path to a configuration file for the parameters of the crawl",
-        default="./configs/config.yaml"
+        default="./configs/english_music.yaml"
         )
     args = parser.parse_args()
 
