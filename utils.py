@@ -1,78 +1,77 @@
-#%%
-import json
-import numpy as np
 
+import yaml
 
-#%%
-
-# helper function to create hyperlinked text for html
-def create_anchor(link_data):
-    """Helper function to generate anchored html from link data.
-
-    Args:
-        link_data ([dict]): A row of data as dict
-
-    Returns:
-        [list]: Same data with hyperlink
-    """
-    title = link_data["title"]
-    url = link_data["link"]
-    hyperlink = '<a href=' + url + ' target="_blank">' + title + '</a>'
-
-    other_data = [
-        link_data["final_score"],
-        link_data["author"],
-        link_data["views"],
-        link_data["likes"],
-        ' '.join(link_data["keywords"])
-        ]
-    res = [hyperlink] + other_data
-    return res
-
-# To get score from the scored list (with anchored title).
-# This is to enable sorting of the list containing data.
-def get_score(row):
-    return row[1]
-
-# To create html table from data and write to filename
-def write_to_html(target_folder, filename, sorted_list):
-    table = "<table>\n"
-    # Create the table's column headers
-    header = ['Title', 'Score', 'Author', 'Views', 'Likes', 'Keywords']
-    table += "  <tr>\n"
-    for column in header:
-        table += "    <th>{0}</th>\n".format(column.strip())
-    table += "  </tr>\n"
-
-    # Create the table's row data
-    for row in sorted_list:
-        table += "  <tr>\n"
-        for column in row:
-            table += "    <td>{0}</td>\n".format(column)
-        table += "  </tr>\n"
-
-    table += "</table>"
-
-    with open(target_folder+filename, "w") as f:
-        f.writelines(table)
-
-def get_author_counts_dict(path_to_author_counts_dict="author_counts.json"):
+def load_yaml_config(file_path):
+    """Load a YAML configuration file."""
     try:
-        with open(path_to_author_counts_dict, 'r') as fp:
-            author_counts_dict = json.load(fp)
-        return author_counts_dict
-    except Exception:
-        return {}
+        with open(file_path, 'r') as file:
+            config = yaml.safe_load(file)
+            return config
+    except FileNotFoundError:
+        print(f"Error: The file {file_path} was not found.")
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file: {e}")
 
-def normalize_dictionary(dictionary):
-    factor=1.0/sum(dictionary.values())
-    normalised_dictionary = {k: v*factor for k, v in dictionary.items()}
-    return normalised_dictionary
+def df_to_html(
+        df,
+        output_file="output.html",
+        url_column="link",
+        title_column="title",
+        highlight_column="is_seed"
+        ):
+    """
+    Converts a Pandas DataFrame to an HTML file with hyperlinks.
 
-def get_quantile_of_frontier(frontier, quantile):
-    all_scores = np.array([tuple[0] for tuple in frontier])
-    quantile = np.quantile(all_scores,quantile)
-    return quantile
+    :param df: Pandas DataFrame containing the data
+    :param url_column: The column name containing URLs
+    :param output_file: The output HTML file name
+    """
+    # Ensure required columns exist
+    if url_column not in df.columns:
+        raise ValueError(f"Column '{url_column}' not found in DataFrame")
+    if title_column not in df.columns:
+        raise ValueError(f"Column '{title_column}' not found in DataFrame")
+    if highlight_column not in df.columns:
+        raise ValueError(f"Column '{highlight_column}' not found in DataFrame")
 
 
-# %%
+    # Convert URLs to clickable links with titles as text
+    df[title_column] = df.apply(lambda row: f'<a href="{row[url_column]}" target="_blank">{row[title_column]}</a>', axis=1)
+    df = df.drop(url_column, axis=1)
+
+    # Convert DataFrame to HTML with row highlighting
+    def highlight_row(row):
+        return 'background-color: orange;' if str(row[highlight_column]).lower() == 'true' else ''
+
+    styled_table = df.style.apply(lambda row: [highlight_row(row)] * len(row), axis=1).to_html(escape=False)
+
+    # Write to file
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Data Table</title>
+            <style>
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+            </style>
+        </head>
+        <body>
+        <h2>Data Table with Hyperlinks</h2>
+        """ + styled_table + """
+        </body>
+        </html>
+        """)
+
+    print(f"HTML file '{output_file}' has been created successfully.")
+
+# Example usage
+# data = {
+#     "Name": ["Google", "OpenAI", "GitHub"],
+#     "Website": ["https://www.google.com", "https://www.openai.com", "https://www.github.com"]
+# }
+# df = pd.DataFrame(data)
+# df_to_html(df, "Website")
+

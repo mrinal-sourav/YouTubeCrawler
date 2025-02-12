@@ -9,60 +9,64 @@ Additionaly, keyword based matching, and author count based suppression, are use
  pip install -r requirements.txt
 
  - Uses "argparse" to parse input arguments from command line.
- - Access help for the inputs using "python3 you_tube_crawler -h", like so:
-	python3 youtube_crawler.py -h
-usage: youtube_crawler.py [-h] [-s SEEDURL] [-o OUTPUTDIR] [-n NUMVIDEOS]
+ - Argparse expects a path to a config file.
+ - config file should contain the following: 
+		seedUrls:
+		- "https://youtu.be/ONVpFtiD-fo"
+		- "https://youtu.be/P_fHJIYENdI"
+		outputDir: "knowledge/science/"
+		numVideos: 500
+		maxAuthorCount: 5
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -s SEEDURL, --seedUrl SEEDURL
-                        The seed url to start the crawling from.
-  -o OUTPUTDIR, --outputDir OUTPUTDIR
-                        Path to the output directory for the resulting html.
-                        Defaults to ./crawled_outputs/default_outputs/
-  -n NUMVIDEOS, --numVideos NUMVIDEOS
-                        the number of videos to crawl : (200 (default) links
-                        takes ~10 minutes)
-  -a MAXAUTHORCOUNT, --maxAuthorCount MAXAUTHORCOUNT
-                        maximum author count to skip crawling videos of the
-                        same auther beyong this number
+		seedUrls - One or more links to youtube videos can be
+					added (preferrable around similar topics)
+
+		outputDir - where the final html will be written
+		numVideos - number of videos to crawl
+		maxAuthorCount - number of times author can be
+						allowed to repeat in the results
 
  - Outputs:
 	A sorted html file; written to the outputDir provided in "crawled_outputs" folder.
        Format of the output:
-		Video Title (with hyperlink that opens the video on a new tab on click), Score, Author, Views, Likes, Dislikes
+		Video Title (with hyperlink that opens the video on a new tab on click), Score, Author, Views, Likes, keywords, is_seed, priority (results are sorted by this key)
 
 	Score is calculated by the ratio:
 
 		No. of Views / (Likes*log10(likes))
-		Other factors that effect the final priority is a keyword matching algorithm and
-		the author count (as more videos from the same author accumulates, priority for the same auther reduces)
+			- 	The smaller this number, the "better" the video.
+				If EVERY person who views a video also hits "like", this score will approach 1.
 
-	The smaller this number, the "better" the video.
-	If EVERY person who views a video also hits "like", this score will approach 1.
+		A keyword matching algorithm also influences the priority of the crawl,
+		where the keywords of the seedUrls are matched against the keywords of each other
+		video in the crawl.
 
- - Sample command (Updated 25th Feb 2023):
-	python3 youtube_crawler.py -s https://youtu.be/ROEL3bOWk80 -o music/english
-	crawling ... find progress in log file: smart_crawl.log
-	--- Crawl took 1207.4183235168457 seconds ---
 
-	Log file contains:
 
-	2024-06-24 12:20:01,824 - INFO - Crawling started with seed URL: https://youtu.be/ROEL3bOWk80
-	2024-06-24 12:20:03,331 - INFO - Link = https://youtu.be/ROEL3bOWk80
-	2024-06-24 12:20:03,927 - INFO - Likes = 37000
-	2024-06-24 12:20:03,928 - INFO - Views = 2709839
-	2024-06-24 12:20:03,929 - INFO - Crawling started from link titled: Nothing But Thieves Broken Machine Live for IAMWHO
-	2024-06-24 12:20:07,378 - INFO - Link = https://www.youtube.com/watch?v=I6g-FUVDdxw
-	2024-06-24 12:20:08,100 - INFO - Likes = 39000
-	2024-06-24 12:20:08,101 - INFO - Views = 4436747
+ - Sample command (Updated 12th Feb 2025):
+	$python3 youtube_crawler.py
 
-	......
+	crawling ... find progress in log file: smart_crawl.log 
+	Output File will be named: 
+			map_problems_world_surprising_biggest_plants_39.html
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	%s percent crawling complete 4.399
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	%s percent crawling complete 7.8
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	%s percent crawling complete 9.4
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	%s percent crawling complete 12.0
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	%s percent crawling complete 13.8
+	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+	.....
 
-	2024-06-24 12:20:54,685 - INFO - 7.000 percent crawling complete
-	2024-06-24 12:20:54,685 - INFO - File updated @ : /home/mrinal/Documents/Projects/YouTubeCrawler/crawled_outputs/music/english/Nothing But Thieves Broken Machine Live for IAMWHO.html
+	................................................................
 
-	......
+		--- Crawl took 1207.4183235168457 seconds ---
+
+	Alternately, the log file can be referred to for progress with individual urls. 
 
  - IMPORTANT NOTES:
 
@@ -74,9 +78,3 @@ optional arguments:
         - Links gathered may differ based on geographic location crawled from.
         - Some popular videos by location may still show up despite little relation to the source link provided.
         - Time taken and scores vary depending on factors like the stats for the source video provided, vpn etc.
-
-	Code for writing to html is inspired from:
-	https://vidigest.com/2018/12/02/generating-an-html-table-from-file-data-using-python-3/
-
-
-

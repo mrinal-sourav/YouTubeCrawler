@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 ###### CONSTANTS
 # SLEEP_TIME time is added for politeness policy while crawling; do not reduce.
 SLEEP_TIME = 1.02
-STRING_CLIP = 50
+STRING_CLIP = 60
 EPSILON = 1e-9
-KEYWORD_MATCH_THRESHOLD = 80
+KEYWORD_MATCH_THRESHOLD = 95
 LIKES_LIMIT = 2000
 
 
 # REGEX PATTERNS
 LIKES_REGEX = re.compile(r'"accessibilityText":"[\d,.KMB]+ likes"}')
-VIEWS_REGEX = re.compile(r'"allowRatings":true,"viewCount":"[\d,.KMB]+","author"')
+VIEWS_REGEX = re.compile(r'"viewCount":{"simpleText":"[\d,.KMB]+ views"')
 
 DIGIT_WITHOUT_CHAR = re.compile(r'\d+')
 DIGIT_PATTERN = re.compile(r'\d+[A-Z]')
@@ -62,11 +62,7 @@ def get_keywords_score(seed_keywords, match_keywords):
             best_match, match_score = process.extractOne(seed_word,match_keywords)
             if match_score >= KEYWORD_MATCH_THRESHOLD:
                 exponent += 1
-        if exponent > 0:
-            keyword_score = 10 ** exponent
-            return keyword_score
-        else:
-            return EPSILON
+        return 10 ** exponent
     else:
         return EPSILON
 
@@ -118,7 +114,9 @@ def get_data(link):
         "author": 'NA',
         "views":0,
         "likes":0,
-        "keywords": "NA"
+        "keywords": [],
+        "is_seed": False,
+        "priority": float('inf')
         }
 
     time.sleep(SLEEP_TIME)
@@ -146,10 +144,10 @@ def get_data(link):
                 logger.info(f"likes string not found")
                 return row
             likes = extract_integers(likes_strng)
-            if likes<LIKES_LIMIT:
-                logger.info(f"likes less than hundred")
-                return row
             logger.info(f"Likes = {likes}")
+            if likes<LIKES_LIMIT:
+                logger.info(f"likes less than {LIKES_LIMIT}")
+                return row
 
             # get views
             views_strng = extract_from_regex(VIEWS_REGEX, theSite)
@@ -163,6 +161,9 @@ def get_data(link):
             keywords = re.findall('''<meta name="keywords" content="(.+?)"><''',theSite,re.DOTALL)[0]
             if keywords:
                 row["keywords"] = process_keywords(keywords)
+            if title:
+                row["keywords"] += process_keywords(title)
+            row["keywords"] = list(set(row["keywords"]))
 
             score = views/likes
             # dividing further by log10 of likes to prioritize higher number of likes
