@@ -110,13 +110,13 @@ def get_data(link):
     row = {
         "title": 'NA',
         "link": link,
+        "priority": EPSILON, # only relevant to seed urls
         "final_score": float('inf'),
         "author": 'NA',
         "views":0,
         "likes":0,
         "keywords": [],
         "is_seed": False,
-        "priority": EPSILON # only relevant to seed urls
         }
 
     time.sleep(SLEEP_TIME)
