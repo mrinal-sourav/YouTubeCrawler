@@ -30,6 +30,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
         max_pages ([int]): The number of videos to crawl.
     """
 
+    ############################################ INITIALIZATION
     # initialize variables
     prepend = "https://www.youtube.com/watch?v="
     url_id_list = [x.split("=")[-1] for x in SeedUrls]
@@ -44,17 +45,20 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
     author_counts = {}
     for indx, SeedUrl in enumerate(SeedUrls):
         seed_data = get_data(SeedUrl)
-        all_titles.append(seed_data["title"])
-        author = seed_data["author"]
-        # update author counts dict
-        if author in author_counts.keys():
-            author_counts[author] += 1
-        else:
-            author_counts[author] = 1
-
         seed_data["is_seed"] = True
         pq.heappush(frontier, (-indx, seed_data))
         scored_list.append(seed_data)
+
+        all_titles.append(seed_data["title"])
+        author = seed_data["author"]
+
+        if author != '':
+            # update author counts dict
+            if author in author_counts.keys():
+                author_counts[author] += 1
+            else:
+                author_counts[author] = 1
+
         all_seed_keywords += seed_data["keywords"]
     all_seed_keywords = list(set(all_seed_keywords))
     if all_titles:
@@ -63,6 +67,9 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
     else:
         filename = "default_filename.html"
     print(f"Output File will be named: \n\t {filename}")
+
+    ################################ MAIN LOOP
+
     # Iteration starts with atleast one element in frontier.
     # Iteration continues till num_pages reaches the max_pages (defined by user).
     # The loop is structured like bfs using a prio queue (hill-climbing) starting from the seed url.
@@ -89,8 +96,10 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
             complete_new_link = prepend + link_id
             link_data = get_data(complete_new_link)
             if link_data["final_score"] == float('inf'):
+                logging.info(f"final score is infinite for {complete_new_link}")
                 continue
             if link_data["title"] in all_titles:
+                logging.info(f"Title already in all_titles: {link_data['title']}")
                 continue
             all_titles.append(link_data["title"])
 
@@ -103,6 +112,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
 
             # skip link if author count reaches maximum
             if author_counts[author] > max_author_count:
+                logging.info("Author count exceeded for %s", author)
                 continue
 
             keywords_score = get_keywords_score(all_seed_keywords, link_data["keywords"])
@@ -137,7 +147,7 @@ if __name__ == "__main__":
         "-c",
         "--config_path",
         help="path to a configuration file for the parameters of the crawl",
-        default="./configs/english_music.yaml"
+        default="./configs/coke_studio.yaml"
         )
     args = parser.parse_args()
 

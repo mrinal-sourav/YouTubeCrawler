@@ -48,33 +48,35 @@ Additionaly, keyword based matching, and author count based suppression, are use
 
 	crawling ... find progress in log file: smart_crawl.log 
 	Output File will be named: 
-			map_problems_world_surprising_biggest_plants_39.html
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
-	%s percent crawling complete 4.399
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
-	%s percent crawling complete 7.8
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
-	%s percent crawling complete 9.4
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
-	%s percent crawling complete 12.0
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
-	%s percent crawling complete 13.8
-	HTML file './crawled_outputs/knowledge/science/map_problems_world_surprising_biggest_plants_39.html' has been created successfully.
+			radio_triple_j_bbc_mahogany_deezer_1.html
+	HTML file './crawled_outputs/music/english/radio/radio_triple_j_bbc_mahogany_deezer_1.html' has been created successfully.
+	0.4 % crawling complete
+	HTML file './crawled_outputs/music/english/radio/radio_triple_j_bbc_mahogany_deezer_1.html' has been created successfully.
+	0.899 % crawling complete
+	HTML file './crawled_outputs/music/english/radio/radio_triple_j_bbc_mahogany_deezer_1.html' has been created successfully.
+	1.400 % crawling complete
+	HTML file './crawled_outputs/music/english/radio/radio_triple_j_bbc_mahogany_deezer_1.html' has been created successfully.
+	1.9 % crawling complete
+	HTML file './crawled_outputs/music/english/radio/radio_triple_j_bbc_mahogany_deezer_1.html' has been created successfully.
+	3.300 % crawling complete
 	.....
 
 	................................................................
 
 		--- Crawl took 1207.4183235168457 seconds ---
 
-	Alternately, the log file can be referred to for progress with individual urls. 
+	Alternately, the "smart_crawl.log" file can be referred to for detailed progress with individual urls.
 
  - IMPORTANT NOTES:
 
 	WAIT TIME IS ADDED FOR "POLITENESS POLICY" WHILE CRAWLING. (set to 1.1 seconds)
 	PLEASE DO NOT REDUCE IT LEST YOUTUBE THINKS YOU ARE A BOT.
 
-       - General Notes:
-	 - Actual number of urls in the crawled file may have slightly more links than specified.
+    - General Notes:
+	 	- Actual number of urls in the crawled file may have slightly more links than specified.
         - Links gathered may differ based on geographic location crawled from.
         - Some popular videos by location may still show up despite little relation to the source link provided.
         - Time taken and scores vary depending on factors like the stats for the source video provided, vpn etc.
+		- One can also crawl the channel's video page, e.g.:
+		https://www.youtube.com/@cokestudio/videos
+		 but it will be helpful to also add particular videos from the channel as seed to extract relevant keywords.

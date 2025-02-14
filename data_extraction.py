@@ -3,7 +3,7 @@ import re
 import urllib.request
 import time
 import math
-from fuzzywuzzy import process
+from fuzzywuzzy import process, utils
 
 import logging
 logger = logging.getLogger(__name__)
@@ -41,7 +41,9 @@ def process_keywords(strng):
                 all_words += word.split(' ')
             else:
                 all_words.append(word)
-    filtered_keywords = set(all_words) - set(stop_words_list)
+    processed_words = [utils.full_process(word) for word in all_words]
+    truncated = list(filter(None, processed_words))
+    filtered_keywords = set(truncated) - set(stop_words_list)
     return list(filtered_keywords)
 
 def get_keywords_score(seed_keywords, match_keywords):
@@ -62,7 +64,10 @@ def get_keywords_score(seed_keywords, match_keywords):
             best_match, match_score = process.extractOne(seed_word,match_keywords)
             if match_score >= KEYWORD_MATCH_THRESHOLD:
                 exponent += 1
-        return 10 ** exponent
+        if exponent > 0:
+            return 20 * exponent
+        else:
+            return EPSILON
     else:
         return EPSILON
 
@@ -108,11 +113,11 @@ def get_data(link):
     '''
 
     row = {
-        "title": 'NA',
+        "title": '',
         "link": link,
         "priority": EPSILON, # only relevant to seed urls
         "final_score": float('inf'),
-        "author": 'NA',
+        "author": '',
         "views":0,
         "likes":0,
         "keywords": [],
@@ -187,3 +192,4 @@ def get_data(link):
 # extract_integers(x)
 
 # %%
+

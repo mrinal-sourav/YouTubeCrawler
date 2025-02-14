@@ -132,3 +132,5 @@ sharing
 video
 phone
 youtube
+reaction
+reel
