@@ -10,8 +10,8 @@ import pandas as pd
 from utils import *
 from data_extraction import *
 
-# # To improve on quality as search progresses, lower the better; reduces crawl speed.
-# PRIORITY_QUANTILE_THRESHOLD = .90
+# CONSTANT
+MAX_NUM = 10e10
 
 # Set up logging
 logging.basicConfig(
@@ -44,8 +44,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
     all_seed_keywords = []
     author_counts = {}
     for indx, SeedUrl in enumerate(SeedUrls):
-        seed_data = get_data(SeedUrl)
-        seed_data["is_seed"] = True
+        seed_data = get_data(SeedUrl, is_seed=True)
         pq.heappush(frontier, (-indx, seed_data))
         scored_list.append(seed_data)
 
@@ -62,8 +61,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
         all_seed_keywords += seed_data["keywords"]
     all_seed_keywords = list(set(all_seed_keywords))
     if all_titles:
-        filename_strng = ' '.join(all_titles)
-        filename = '_'.join(process_keywords(filename_strng)) + ".html"
+        filename = '_'.join(all_titles) + ".html"
     else:
         filename = "default_filename.html"
     print(f"Output File will be named: \n\t {filename}")
@@ -95,7 +93,7 @@ def smart_crawl(SeedUrls, max_pages, target_folder, max_author_count):
             # Convert ids to absolute youtube urls
             complete_new_link = prepend + link_id
             link_data = get_data(complete_new_link)
-            if link_data["final_score"] == float('inf'):
+            if link_data["final_score"] >= MAX_NUM:
                 logging.info(f"final score is infinite for {complete_new_link}")
                 continue
             if link_data["title"] in all_titles:
@@ -147,7 +145,7 @@ if __name__ == "__main__":
         "-c",
         "--config_path",
         help="path to a configuration file for the parameters of the crawl",
-        default="./configs/coke_studio.yaml"
+        default="./configs/veritasium.yaml"
         )
     args = parser.parse_args()
 
@@ -176,3 +174,5 @@ if __name__ == "__main__":
             print("Error: No seedUrls provided.")
     else:
         print("Error: No config file provided.")
+
+# %%

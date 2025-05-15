@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 SLEEP_TIME = 1.02
 STRING_CLIP = 60
 EPSILON = 1e-9
+MAX_NUM = 10e10
 KEYWORD_MATCH_THRESHOLD = 95
-LIKES_LIMIT = 2000
+LIKES_LIMIT = 2500
 
 
 # REGEX PATTERNS
-LIKES_REGEX = re.compile(r'"accessibilityText":"[\d,.KMB]+ likes"}')
+LIKES_REGEX_1 = re.compile(r'"accessibilityText":"[\d,.KMB]+ likes"}')
+LIKES_REGEX_2 = re.compile(r'"accessibilityText":"like this video along with [\d,.KMB]+ other people"')
 VIEWS_REGEX = re.compile(r'"viewCount":{"simpleText":"[\d,.KMB]+ views"')
 
 DIGIT_WITHOUT_CHAR = re.compile(r'\d+')
@@ -32,15 +34,19 @@ with open("stop_words.txt", "r") as f:
 ###### helper functions
 def process_keywords(strng):
     lowercase_string = strng.lower()
-    keywords = lowercase_string.split(',')
+    keywords = re.split(';|,| ', lowercase_string)
+    cleaned_words = [re.sub('[^a-z0-9]+', ' ', _) for _ in keywords]
     all_words = []
-    for word in keywords:
+    for word in cleaned_words:
         word = word.strip()
         if len(word) > 3:
-            if ' ' in word:
+            if (' ' in word) and (word[0] != 'x'):
                 all_words += word.split(' ')
+            elif (' ' in word) and (word[0] == 'x'):
+                continue
             else:
                 all_words.append(word)
+    all_words = list(set(all_words))
     processed_words = [utils.full_process(word) for word in all_words]
     truncated = list(filter(None, processed_words))
     filtered_keywords = set(truncated) - set(stop_words_list)
@@ -106,7 +112,7 @@ def extract_integers(strng):
         number_str += number_with_char[0][-1]
     return convert_to_integer(number_str)
 
-def get_data(link):
+def get_data(link, is_seed=False):
     '''
     Given a link to youtube video, extracts views, likes,
     and other info (title, author, keywords) to return a row of data as dict.
@@ -115,13 +121,13 @@ def get_data(link):
     row = {
         "title": '',
         "link": link,
-        "priority": EPSILON, # only relevant to seed urls
-        "final_score": float('inf'),
+        "priority": 0, # only relevant to seed urls
+        "final_score": MAX_NUM,
         "author": '',
         "views":0,
         "likes":0,
         "keywords": [],
-        "is_seed": False,
+        "is_seed": is_seed,
         }
 
     time.sleep(SLEEP_TIME)
@@ -134,7 +140,9 @@ def get_data(link):
 
             # get title
             title = re.findall('''<title>(.+?)</title>''',theSite,re.DOTALL)[0]
-            title = re.sub(r'\W+', ' ', title)
+            title = process_keywords(title)
+            title = list(set(title))
+            title = "_".join(title)
             row["title"] = title[:STRING_CLIP]
 
             # get author
@@ -144,13 +152,15 @@ def get_data(link):
                 row["author"] = row["author"][:STRING_CLIP]
 
             # get likes
-            likes_strng = extract_from_regex(LIKES_REGEX, theSite)
+            likes_strng = extract_from_regex(LIKES_REGEX_1, theSite)
             if likes_strng == "No match found.":
-                logger.info(f"likes string not found")
-                return row
+                likes_strng = extract_from_regex(LIKES_REGEX_2, theSite)
+                if likes_strng == "No match found.":
+                    logger.info(f"likes string not found")
+                    return row
             likes = extract_integers(likes_strng)
             logger.info(f"Likes = {likes}")
-            if likes<LIKES_LIMIT:
+            if likes<LIKES_LIMIT and not is_seed:
                 logger.info(f"likes less than {LIKES_LIMIT}")
                 return row
 
@@ -163,7 +173,8 @@ def get_data(link):
             logger.info(f"Views = {views}")
 
             # get keywords
-            keywords = re.findall('''<meta name="keywords" content="(.+?)"><''',theSite,re.DOTALL)[0]
+            keywords = re.findall('''<meta name="keywords" content="(.+?)"><''',
+            theSite,re.DOTALL)[0]
             if keywords:
                 row["keywords"] = process_keywords(keywords)
             if title:
@@ -183,13 +194,6 @@ def get_data(link):
 
 #%%
 ########## testing
-# print(get_data("https://youtu.be/CVU1Mv9e-0U"))
-
-
-# # %%
-# x = "\"accessibilityText\":\"14 likes\"}"
-# # %%
-# extract_integers(x)
+# print(get_data("https://youtu.be/xssAtBenlKU"))
 
 # %%
-
