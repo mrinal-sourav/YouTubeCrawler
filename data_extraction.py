@@ -22,6 +22,7 @@ LIKES_LIMIT = 2500
 LIKES_REGEX_1 = re.compile(r'"accessibilityText":"[\d,.KMB]+ likes"}')
 LIKES_REGEX_2 = re.compile(r'"accessibilityText":"like this video along with [\d,.KMB]+ other people"')
 VIEWS_REGEX = re.compile(r'"viewCount":{"simpleText":"[\d,.KMB]+ views"')
+WORD_FILTER = re.compile(r'\b[^\d\W]+\b')
 
 DIGIT_WITHOUT_CHAR = re.compile(r'\d+')
 DIGIT_PATTERN = re.compile(r'\d+[A-Z]')
@@ -34,10 +35,9 @@ with open("stop_words.txt", "r") as f:
 ###### helper functions
 def process_keywords(strng):
     lowercase_string = strng.lower()
-    keywords = re.split(';|,| ', lowercase_string)
-    cleaned_words = [re.sub('[^a-z0-9]+', ' ', _) for _ in keywords]
+    keywords = WORD_FILTER.findall(lowercase_string)
     all_words = []
-    for word in cleaned_words:
+    for word in keywords:
         word = word.strip()
         if len(word) > 3:
             if (' ' in word) and (word[0] != 'x'):
@@ -140,10 +140,10 @@ def get_data(link, is_seed=False):
 
             # get title
             title = re.findall('''<title>(.+?)</title>''',theSite,re.DOTALL)[0]
-            title = process_keywords(title)
-            title = list(set(title))
-            title = "_".join(title)
-            row["title"] = title[:STRING_CLIP]
+            title = WORD_FILTER.findall(title)
+            title_words = list(set(title))
+            display_title = "_".join(title_words)
+            row["title"] = display_title[:STRING_CLIP]
 
             # get author
             if re.findall('''"author":"(.+?)"''',theSite,re.DOTALL):
@@ -178,7 +178,7 @@ def get_data(link, is_seed=False):
             if keywords:
                 row["keywords"] = process_keywords(keywords)
             if title:
-                row["keywords"] += process_keywords(title)
+                row["keywords"] += title_words
             row["keywords"] = list(set(row["keywords"]))
 
             score = views/likes
@@ -194,6 +194,6 @@ def get_data(link, is_seed=False):
 
 #%%
 ########## testing
-# print(get_data("https://youtu.be/xssAtBenlKU"))
+print(get_data("https://youtu.be/xssAtBenlKU"))
 
 # %%
