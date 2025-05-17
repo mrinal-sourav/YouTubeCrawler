@@ -194,6 +194,6 @@ def get_data(link, is_seed=False):
 
 #%%
 ########## testing
-print(get_data("https://youtu.be/xssAtBenlKU"))
+# print(get_data("https://youtu.be/xssAtBenlKU"))
 
 # %%
