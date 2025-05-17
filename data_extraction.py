@@ -140,10 +140,9 @@ def get_data(link, is_seed=False):
 
             # get title
             title = re.findall('''<title>(.+?)</title>''',theSite,re.DOTALL)[0]
-            title = WORD_FILTER.findall(title)
-            title_words = list(set(title))
-            display_title = "_".join(title_words)
-            row["title"] = display_title[:STRING_CLIP]
+            title_words = WORD_FILTER.findall(title)
+            title_string = "_".join(title_words)
+            row["title"] = title_string[:STRING_CLIP]
 
             # get author
             if re.findall('''"author":"(.+?)"''',theSite,re.DOTALL):
@@ -178,7 +177,7 @@ def get_data(link, is_seed=False):
             if keywords:
                 row["keywords"] = process_keywords(keywords)
             if title:
-                row["keywords"] += title_words
+                row["keywords"] += process_keywords(title)
             row["keywords"] = list(set(row["keywords"]))
 
             score = views/likes
