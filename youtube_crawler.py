@@ -145,7 +145,7 @@ if __name__ == "__main__":
         "-c",
         "--config_path",
         help="path to a configuration file for the parameters of the crawl",
-        default="./configs/veritasium.yaml"
+        default="./configs/default_conf.yaml"
         )
     args = parser.parse_args()
 
